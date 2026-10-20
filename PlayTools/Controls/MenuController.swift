@@ -53,6 +53,11 @@ extension UIApplication {
     }
 
     @objc
+    func exportHookStatus(_ sender: AnyObject) {
+        HookDiagnostics.exportSnapshot()
+    }
+
+    @objc
     func rotateView(_ sender: AnyObject) {
         for scene in connectedScenes {
             guard let windowScene = scene as? UIWindowScene else { continue }
@@ -202,11 +207,13 @@ class MenuController {
 
     static func debuggingMenu() -> UIMenu {
         let menuTitle = [
-            "Put a mark in toucher log"
+            "Put a mark in toucher log",
+            "Export hook status snapshot"
         ]
-        let keyCommands = ["L"]
+        let keyCommands = ["L", "E"]
         let selectors = [
-            #selector(UIApplication.markToucherLog)
+            #selector(UIApplication.markToucherLog),
+            #selector(UIApplication.exportHookStatus)
         ]
         let arrowKeyChildrenCommands = zip(keyCommands, menuTitle).map { (command, btn) in
             UIKeyCommand(title: btn,

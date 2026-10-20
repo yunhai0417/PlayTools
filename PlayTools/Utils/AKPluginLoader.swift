@@ -18,13 +18,22 @@ class AKInterface {
         // 1. Form the plugin's bundle URL
         guard let bundleURL = Bundle.main.builtInPlugInsURL?
                                     .appendingPathComponent("AKInterface")
-                                    .appendingPathExtension("bundle") else { return nil }
+                                    .appendingPathExtension("bundle") else {
+            PCLog.plugin.error("AKInterface: builtInPlugInsURL unavailable")
+            return nil
+        }
 
         // 2. Create a bundle instance with the plugin URL
-        guard let bundle = Bundle(url: bundleURL) else { return nil }
+        guard let bundle = Bundle(url: bundleURL) else {
+            PCLog.plugin.error("AKInterface: bundle not found at \(bundleURL.path)")
+            return nil
+        }
 
         // 3. Load the bundle and our plugin class
-        guard let pluginClass = bundle.principalClass as? Plugin.Type else { return nil }
+        guard let pluginClass = bundle.principalClass as? Plugin.Type else {
+            PCLog.plugin.error("AKInterface: principalClass does not conform to Plugin")
+            return nil
+        }
 
         // 4. Create an instance of the plugin class
         return pluginClass.init()

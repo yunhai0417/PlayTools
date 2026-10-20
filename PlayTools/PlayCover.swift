@@ -12,6 +12,7 @@ public class PlayCover: NSObject {
     var menuController: MenuController?
 
     @objc static public func launch() {
+        PCLog.loader.info("PlayTools launching (safeMode: \(PlaySettings.shared.safeMode))")
         quitWhenClose()
         AKInterface.initialize()
         UserPluginLoader.initialize()
@@ -24,7 +25,7 @@ public class PlayCover: NSObject {
             FileManager.default.changeCurrentDirectoryPath("/")
         }
 
-        if PlaySettings.shared.displayRotation != 0 {
+        if !PlaySettings.shared.safeMode && PlaySettings.shared.displayRotation != 0 {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5, execute: {
                 let rotateCommand = UIKeyCommand(
                     title: "Keep Rotation Command",

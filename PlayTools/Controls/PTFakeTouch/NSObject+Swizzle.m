@@ -22,13 +22,30 @@ __attribute__((visibility("hidden")))
 
 @implementation NSObject (Swizzle)
 
+// Report an installation result to the hook diagnostics registry
+static void PTRecordHook(Class cls, SEL origSelector, SEL newSelector,
+                         NSString *result, NSString *detail) {
+    [[HookStatusRegistry shared] recordTarget:NSStringFromClass(cls)
+                                     selector:NSStringFromSelector(origSelector)
+                                  replacement:NSStringFromSelector(newSelector)
+                                       result:result
+                                       detail:detail];
+}
+
 - (void) swizzleInstanceMethod:(SEL)origSelector withMethod:(SEL)newSelector
 {
     Class cls = [self class];
     // If current class doesn't exist selector, then get super
     Method originalMethod = class_getInstanceMethod(cls, origSelector);
     Method swizzledMethod = class_getInstanceMethod(cls, newSelector);
-    
+
+    if (originalMethod == NULL || swizzledMethod == NULL) {
+        PTRecordHook(cls, origSelector, newSelector,
+                     @"failed", originalMethod == NULL
+                         ? @"original method not found" : @"replacement method not found");
+        return;
+    }
+
     // Add selector if it doesn't exist, implement append with method
     if (class_addMethod(cls,
                         origSelector,
@@ -51,6 +68,7 @@ __attribute__((visibility("hidden")))
                                                 method_getTypeEncoding(swizzledMethod)),
                             method_getTypeEncoding(originalMethod));
     }
+    PTRecordHook(cls, origSelector, newSelector, @"applied", nil);
 }
 
 - (void) swizzleExchangeMethod:(SEL)origSelector withMethod:(SEL)newSelector
@@ -59,14 +77,29 @@ __attribute__((visibility("hidden")))
     // If current class doesn't exist selector, then get super
     Method originalMethod = class_getInstanceMethod(cls, origSelector);
     Method swizzledMethod = class_getInstanceMethod(cls, newSelector);
-    
+
+    if (originalMethod == NULL || swizzledMethod == NULL) {
+        PTRecordHook(cls, origSelector, newSelector,
+                     @"failed", originalMethod == NULL
+                         ? @"original method not found" : @"replacement method not found");
+        return;
+    }
+
     method_exchangeImplementations(originalMethod, swizzledMethod);
+    PTRecordHook(cls, origSelector, newSelector, @"applied", nil);
 }
 
 + (void) swizzleClassMethod:(SEL)origSelector withMethod:(SEL)newSelector {
     Class cls = object_getClass((id)self);
     Method originalMethod = class_getClassMethod(cls, origSelector);
     Method swizzledMethod = class_getClassMethod(cls, newSelector);
+
+    if (originalMethod == NULL || swizzledMethod == NULL) {
+        PTRecordHook(cls, origSelector, newSelector,
+                     @"failed", originalMethod == NULL
+                         ? @"original method not found" : @"replacement method not found");
+        return;
+    }
 
     if (class_addMethod(cls,
                         origSelector,
@@ -85,6 +118,7 @@ __attribute__((visibility("hidden")))
                                                 method_getTypeEncoding(swizzledMethod)),
                             method_getTypeEncoding(originalMethod));
     }
+    PTRecordHook(cls, origSelector, newSelector, @"applied", nil);
 }
 
 - (BOOL) hook_prefersPointerLocked {
@@ -206,7 +240,8 @@ __attribute__((visibility("hidden")))
         [self hook_Unity_KeyboardDelegate_Initialize];
     }
     @catch (NSException *exception) {
-        NSLog(@"Caught exception: %@, reason: %@", exception.name, exception.reason);
+        [[PCLog loader] error:[NSString stringWithFormat:@"Unity KeyboardDelegate Initialize threw %@: %@",
+                               exception.name, exception.reason]];
     }
 }
 
@@ -255,6 +290,16 @@ bool menuWasCreated = false;
 
 @implementation PTSwizzleLoader
 + (void)load {
+    // Safe mode keeps only the menu injection, skipping every optional swizzle
+    if ([[PlaySettings shared] safeMode]) {
+        [[PCLog loader] info:@"safeMode ON: optional swizzles skipped (display matrix, pointer lock, subscription, UE regex, mic, motion, GCMouse, Unity keyboard)"];
+        [[HookStatusRegistry shared] recordTarget:@"safeMode"
+                                         selector:@"optional swizzles"
+                                      replacement:@"-"
+                                           result:@"skipped"
+                                           detail:@"safe mode enabled"];
+    }
+    else {
     // This might need refactor soon
     if(@available(iOS 16.3, *)) {
         if ([[PlaySettings shared] resizableWindow]) {
@@ -331,8 +376,7 @@ bool menuWasCreated = false;
                 [objc_getClass("FBSDisplayMode") swizzleInstanceMethod:@selector(size) withMethod:@selector(hook_size)];
             }
     }
-    
-    [objc_getClass("_UIMenuBuilder") swizzleInstanceMethod:sel_getUid("initWithRootMenu:") withMethod:@selector(initWithRootMenuHook:)];
+
     [objc_getClass("IOSViewController") swizzleInstanceMethod:@selector(prefersPointerLocked) withMethod:@selector(hook_prefersPointerLocked)];
     // Set idiom to iPad
     // [objc_getClass("UIDevice") swizzleInstanceMethod:@selector(userInterfaceIdiom) withMethod:@selector(hook_userInterfaceIdiom)];
@@ -369,6 +413,9 @@ bool menuWasCreated = false;
             [objc_getClass("KeyboardDelegate") swizzleClassMethod:NSSelectorFromString(@"Initialize") withMethod:@selector(hook_Unity_KeyboardDelegate_Initialize)];
         }
     });
+    } // end !safeMode
+
+    [objc_getClass("_UIMenuBuilder") swizzleInstanceMethod:sel_getUid("initWithRootMenu:") withMethod:@selector(initWithRootMenuHook:)];
 }
 
 @end

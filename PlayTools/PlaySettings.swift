@@ -19,7 +19,7 @@ let settings = PlaySettings.shared
             settingsData = try PropertyListDecoder().decode(AppSettingsData.self, from: data)
         } catch {
             settingsData = AppSettingsData()
-            print("[PlayTools] PlaySettings decode failed.\n%@")
+            PCLog.settings.error("PlaySettings decode failed: \(error.localizedDescription)")
         }
     }
 
@@ -99,6 +99,8 @@ let settings = PlaySettings.shared
     @objc lazy var blockSleepSpamming = settingsData.blockSleepSpamming
 
     @objc lazy var ignoreUnityKeyboardInitializationError = settingsData.ignoreUnityKeyboardInitializationError
+
+    @objc lazy var safeMode = settingsData.safeMode
 }
 
 struct AppSettingsData: Codable {
@@ -134,4 +136,7 @@ struct AppSettingsData: Codable {
     var resizableAspectRatioHeight = 0
     var blockSleepSpamming = false
     var ignoreUnityKeyboardInitializationError = false
+    // Diagnostic switch: keeps only platform spoofing, skips all optional hooks,
+    // PlayChain, UE path fixes, sleep throttling and user plugins. Default off.
+    var safeMode = false
 }

@@ -18,7 +18,7 @@ public class PlayKeychain: NSObject {
 
     @objc public static func debugLogger(_ logContent: String) {
         if PlaySettings.shared.settingsData.playChainDebugging {
-            NSLog("PC-DEBUG: \(logContent)")
+            PCLog.keychain.info(logContent)
         }
     }
 
