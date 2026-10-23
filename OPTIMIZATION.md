@@ -69,11 +69,15 @@
   2. 装配器：`class_getInstanceMethod`/`class_getClassMethod` 探测 selector 实际在哪个候选类，逐个尝试直到命中；版本号判断只做兜底不再做首选
   3. 结果全部写入 HookStatusRegistry（复用 0.3）
 - **验收**：注册表驱动安装；类不存在/selector 移动时自动降级并记录，单点失败不影响其他 hook。
+- **状态**：✅ 完成 — `HookRegistry.swift`（模型 + 探测式装配器 `installOnCandidates`，候选类按新到旧排序，逐个 `NSClassFromString` + `class_get*Method` 探测，首个命中者安装；结果逐条写入 HookStatusRegistry，safeMode 跳过 optional 并记录）。
 
 ### 1.2 迁移 PTSwizzleLoader
 - **任务**：把 374 行 `+load` 中的 ~25 个 swizzle 调用改为声明式注册（行为等价矩阵：resizableWindow/adaptiveDisplay/inverseScreenValues/windowFixMethod × iOS 版本）；`hook_*` 方法从 NSObject category 迁到独立容器类（消除 NSObject 污染）。
 - **验收**：迁移前后在相同设置矩阵下 hook 集合一致（写一个 dump 对比脚本）；"适配新 macOS" 从改核心代码变为加一条注册项。
-- **状态**：⬜ 待办（依赖 0.3 的 HookStatusRegistry）
+- **状态**：✅ 完成（主体）/ 🟡 遗留 —
+  - 完成：`+load` 矩阵（~120 行 imperative 代码）整体替换为 `[HookRegistry installFromLoad]`；specs 定义在 `HookRegistrySpecs.swift`（A resizable / B·C adaptive±inverse / C-pre16.3 legacy 三件套 / D default / E always / F conditional，与原矩阵逐分支等价，含 `resolution==6` 时 else-if 语义与 window size 持久化副作用、Unity keyboard 延迟 0.01s）。新增自包含 C 桥接 `PTSwizzleOnClassNamed`（NSObject+Swizzle.h/.m）：不经过 `swizzleInstanceMethod:` 类目方法——该方法在 PlayShadow/BatteryLevel/MediaVolume/Swizzle 四处重复定义，运行时命中哪个是不确定的；桥接直接操作 runtime 并回报结果。
+  - 遗留：① `hook_*` 方法仍留在 NSObject category（迁独立容器类需为每个目标类生成 @interface，风险大于收益，暂缓）；② 四处重复的 `swizzleInstanceMethod:` 类目未清理（PlayShadow/BatteryLevel/MediaVolume 各自内部调用仍走它们，属既有行为）。
+  - 构建与 lint：`xcodebuild -scheme PlayTools` ✅，`swiftlint --strict` ✅；⏳ 待真机冒烟（注入后游戏可启动、窗口模式正确、Hook 快照导出核对 applied 集合）。
 
 ---
 
