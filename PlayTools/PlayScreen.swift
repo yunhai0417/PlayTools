@@ -6,60 +6,63 @@ import Foundation
 import UIKit
 
 let screen = PlayScreen.shared
-let isInvertFixEnabled = PlaySettings.shared.inverseScreenValues && PlaySettings.shared.adaptiveDisplay
-let mainScreenWidth =  !isInvertFixEnabled ? PlaySettings.shared.windowSizeWidth : PlaySettings.shared.windowSizeHeight
-let mainScreenHeight = !isInvertFixEnabled ? PlaySettings.shared.windowSizeHeight : PlaySettings.shared.windowSizeWidth
-let customScaler = PlaySettings.shared.customScaler
+
+/// Geometry snapshot built once from PlaySettings (lazy global, mirroring the
+/// former top-level mainScreenWidth/mainScreenHeight/customScaler lets).
+/// Inverse mode (inverseScreenValues && adaptiveDisplay) feeds the configured
+/// size pre-swapped, exactly like the old ternaries did.
+private func buildScreenGeometry() -> ScreenGeometry {
+    let settings = PlaySettings.shared
+    let inverse = settings.inverseScreenValues && settings.adaptiveDisplay
+    return ScreenGeometry(
+        width: inverse ? settings.windowSizeHeight : settings.windowSizeWidth,
+        height: inverse ? settings.windowSizeWidth : settings.windowSizeHeight,
+        scaler: settings.customScaler)
+}
+
+let screenGeometry = buildScreenGeometry()
 
 extension CGSize {
     func aspectRatio() -> CGFloat {
-        if mainScreenWidth > mainScreenHeight {
-            return mainScreenWidth / mainScreenHeight
-        } else {
-            return mainScreenHeight / mainScreenWidth
-        }
+        screenGeometry.aspectRatio
     }
 
     func toAspectRatio() -> CGSize {
         if #available(iOS 16.3, *) {
-            return CGSize(width: mainScreenWidth, height: mainScreenHeight)
+            return screenGeometry.size
         } else {
-            return CGSize(width: mainScreenHeight, height: mainScreenWidth)
+            return screenGeometry.sizeReversed
         }
     }
 
     func toAspectRatioInternal() -> CGSize {
-        return CGSize(width: mainScreenHeight, height: mainScreenWidth)
+        return screenGeometry.sizeReversed
     }
     func toAspectRatioDefault() -> CGSize {
-        return CGSize(width: mainScreenHeight, height: mainScreenWidth)
+        return screenGeometry.sizeReversed
     }
     func toAspectRatioInternalDefault() -> CGSize {
-        return CGSize(width: mainScreenWidth, height: mainScreenHeight)
+        return screenGeometry.size
     }
 }
 
 extension CGRect {
     func aspectRatio() -> CGFloat {
-        if mainScreenWidth > mainScreenHeight {
-            return mainScreenWidth / mainScreenHeight
-        } else {
-            return mainScreenHeight / mainScreenWidth
-        }
+        screenGeometry.aspectRatio
     }
 
     func toAspectRatio(_ multiplier: CGFloat = 1) -> CGRect {
-        return CGRect(x: minX, y: minY, width: mainScreenWidth * multiplier, height: mainScreenHeight * multiplier)
+        return screenGeometry.rect(self, multiplier: multiplier)
     }
 
     func toAspectRatioReversed() -> CGRect {
-        return CGRect(x: minX, y: minY, width: mainScreenHeight, height: mainScreenWidth)
+        return screenGeometry.rectReversed(self)
     }
     func toAspectRatioDefault(_ multiplier: CGFloat = 1) -> CGRect {
-        return CGRect(x: minX, y: minY, width: mainScreenWidth * multiplier, height: mainScreenHeight * multiplier)
+        return screenGeometry.rect(self, multiplier: multiplier)
     }
     func toAspectRatioReversedDefault() -> CGRect {
-        return CGRect(x: minX, y: minY, width: mainScreenHeight, height: mainScreenWidth)
+        return screenGeometry.rectReversed(self)
     }
 }
 
@@ -68,10 +71,10 @@ extension UIScreen {
         let count = AKInterface.shared!.screenCount
         if PlaySettings.shared.notch {
             if count == 1 {
-                return mainScreenWidth / mainScreenHeight // 1.6 or 1.77777778
+                return screenGeometry.aspectRatio // 1.6 or 1.77777778
             } else {
                 if AKInterface.shared!.isMainScreenEqualToFirst {
-                    return mainScreenWidth / mainScreenHeight
+                    return screenGeometry.aspectRatio
                 }
             }
 
@@ -108,7 +111,7 @@ public class PlayScreen: NSObject {
     }
 
     @objc public static func nativeBounds(_ rect: CGRect) -> CGRect {
-        return rect.toAspectRatio(CGFloat((customScaler)))
+        return rect.toAspectRatio(screenGeometry.scaler)
     }
 
     @objc public static func width(_ size: Int) -> Int {
@@ -191,7 +194,7 @@ public class PlayScreen: NSObject {
     }
 
     @objc public static func nativeBoundsDefault(_ rect: CGRect) -> CGRect {
-        return rect.toAspectRatioDefault(CGFloat((customScaler)))
+        return rect.toAspectRatioDefault(screenGeometry.scaler)
     }
 
     @objc public static func sizeAspectRatioDefault(_ size: CGSize) -> CGSize {

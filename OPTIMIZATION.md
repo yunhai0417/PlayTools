@@ -91,6 +91,7 @@
 ### 2.2 几何变换纯函数化 + 用例
 - **任务**：`PlayScreen.swift` 的 `toAspectRatio*` 家族改为 `ScreenGeometry` 结构（宽高/旋转/scaler 参数注入，消除全局 `let` 依赖）；覆盖 16:9/4:3/自定义/inverse/旋转矩阵用例。
 - **验收**：变换逻辑全量单测覆盖。
+- **状态**：✅ 完成 — 新增 `PlayTools/Utils/ScreenGeometry.swift`（仅 CoreGraphics，width/height/scaler 全注入；aspectRatio/size/sizeReversed/rect(multiplier:)/rectReversed），双编译进 PlayToolsTests。`PlayScreen.swift` 的 4 个全局 `let`（mainScreenWidth/mainScreenHeight/customScaler/isInvertFixEnabled）与 CGSize/CGRect 扩展全部改为委托懒加载全局 `screenGeometry`（首访问时机与原 lazy 语义一致，含 inverse 预交换）；对外 API 签名不变，调用点零改动。11 个用例：16:9 横/竖、4:3、自定义 64:27、正方形、size 对、scaler 乘算、reversed 保原点、inverse 工厂交换语义。旋转矩阵实际参与的是键位路径（displayRotation 在 Keymapping/Editor 侧），在 2.3 补。
 
 ### 2.3 键位坐标换算用例
 - **任务**：keymap 相对坐标（0-1）↔ 屏幕绝对坐标换算抽纯函数 + 用例（含 inverse、分辨率变化）。
