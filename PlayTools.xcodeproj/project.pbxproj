@@ -17,6 +17,7 @@
 		CE0A10012D1A4B0000000004 /* HookDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000003 /* HookDiagnostics.swift */; };
 		CE0A10012D1A4B0000000006 /* HookRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000005 /* HookRegistry.swift */; };
 		CE0A10012D1A4B0000000008 /* HookRegistrySpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000007 /* HookRegistrySpecs.swift */; };
+		CE0A10012D1A4B0000000011 /* PlayToolsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000012 /* PlayToolsTests.swift */; };
 		6E84A14528D0F94E00BF7495 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA818CBA287ABFD5000BEE9D /* UIKit.framework */; };
 		6E84A15028D0F97500BF7495 /* AKInterface.bundle in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		951D8275299D097C00D35B20 /* Playtools.strings in Resources */ = {isa = PBXBuildFile; fileRef = 951D8277299D097C00D35B20 /* Playtools.strings */; };
@@ -119,6 +120,8 @@
 		CE0A10012D1A4B0000000003 /* HookDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookDiagnostics.swift; sourceTree = "<group>"; };
 		CE0A10012D1A4B0000000005 /* HookRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRegistry.swift; sourceTree = "<group>"; };
 		CE0A10012D1A4B0000000007 /* HookRegistrySpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRegistrySpecs.swift; sourceTree = "<group>"; };
+		CE0A10012D1A4B0000000010 /* PlayToolsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlayToolsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		CE0A10012D1A4B0000000012 /* PlayToolsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayToolsTests.swift; sourceTree = "<group>"; };
 		6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AKInterface.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		951D8276299D097C00D35B20 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Playtools.strings; sourceTree = "<group>"; };
 		951D8278299D098000D35B20 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Playtools.strings"; sourceTree = "<group>"; };
@@ -216,6 +219,13 @@
 				B6D774FF2ACFC3D900C0D9D8 /* SwordRPC in Frameworks */,
 				6E84A14528D0F94E00BF7495 /* UIKit.framework in Frameworks */,
 				AA818CB9287ABFB1000BEE9D /* IOKit.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE0A10012D1A4B0000000015 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -430,6 +440,7 @@
 				951D8277299D097C00D35B20 /* Playtools.strings */,
 				AA7196DA287A447700623C15 /* PlayTools */,
 				6E76639928D0FA6F00DE4AF9 /* AKInterface */,
+				CE0A10012D1A4B0000000013 /* PlayToolsTests */,
 				AA7196D9287A447700623C15 /* Products */,
 				AA818CB7287ABFB1000BEE9D /* Frameworks */,
 			);
@@ -440,8 +451,17 @@
 			children = (
 				AA7196D8287A447700623C15 /* PlayTools.framework */,
 				6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */,
+				CE0A10012D1A4B0000000010 /* PlayToolsTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		CE0A10012D1A4B0000000013 /* PlayToolsTests */ = {
+			isa = PBXGroup;
+			children = (
+				CE0A10012D1A4B0000000012 /* PlayToolsTests.swift */,
+			);
+			path = PlayToolsTests;
 			sourceTree = "<group>";
 		};
 		AA7196DA287A447700623C15 /* PlayTools */ = {
@@ -635,6 +655,23 @@
 			productReference = AA7196D8287A447700623C15 /* PlayTools.framework */;
 			productType = "com.apple.product-type.framework";
 		};
+		CE0A10012D1A4B0000000017 /* PlayToolsTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = CE0A10012D1A4B000000001A /* Build configuration list for PBXNativeTarget "PlayToolsTests" */;
+			buildPhases = (
+				CE0A10012D1A4B0000000014 /* Sources */,
+				CE0A10012D1A4B0000000015 /* Frameworks */,
+				CE0A10012D1A4B0000000016 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PlayToolsTests;
+			productName = PlayToolsTests;
+			productReference = CE0A10012D1A4B0000000010 /* PlayToolsTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -651,6 +688,10 @@
 					AA7196D7287A447700623C15 = {
 						CreatedOnToolsVersion = 13.4.1;
 						LastSwiftMigration = 1340;
+					};
+					CE0A10012D1A4B0000000017 = {
+						CreatedOnToolsVersion = 14.0;
+						TestTargetID = AA7196D7287A447700623C15;
 					};
 				};
 			};
@@ -673,6 +714,7 @@
 			targets = (
 				AA7196D7287A447700623C15 /* PlayTools */,
 				6E84A14B28D0F96D00BF7495 /* AKInterface */,
+				CE0A10012D1A4B0000000017 /* PlayToolsTests */,
 			);
 		};
 /* End PBXProject section */
@@ -690,6 +732,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				951D8275299D097C00D35B20 /* Playtools.strings in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE0A10012D1A4B0000000016 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -799,6 +848,14 @@
 				B1E8CF8A28BBE2AB004340D3 /* Keymapping.swift in Sources */,
 				AB7DA47529B85BFB0034ACB2 /* PlayShadow.m in Sources */,
 				9562D1662AB5049B002C329D /* KeyboardEventAdapter.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		CE0A10012D1A4B0000000014 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CE0A10012D1A4B0000000011 /* PlayToolsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1094,6 +1151,56 @@
 			};
 			name = Release;
 		};
+		CE0A10012D1A4B0000000018 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.playcover.PlayToolsTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		CE0A10012D1A4B0000000019 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_TESTING_SEARCH_PATHS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = io.playcover.PlayToolsTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1120,6 +1227,15 @@
 			buildConfigurations = (
 				AA7196E0287A447700623C15 /* Debug */,
 				AA7196E1287A447700623C15 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		CE0A10012D1A4B000000001A /* Build configuration list for PBXNativeTarget "PlayToolsTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				CE0A10012D1A4B0000000018 /* Debug */,
+				CE0A10012D1A4B0000000019 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
