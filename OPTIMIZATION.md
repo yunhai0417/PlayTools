@@ -99,6 +99,8 @@
 
 ### 2.4 PlayChain 序列化用例
 - **任务**：`PlayKeychain` add/copyMatching/update/delete 的 plist 语义 + `PlayKeychainDB` SQLite 持久化用例（临时目录）。
+- **状态**：✅ 完成 — 11 个用例（add/query 往返、copyMatching 数据/存在性检查/未找到/r_Attributes 剥离 v_Data/matchLimitAll 数组、update 替换与未找到、delete 删除与未找到、跨 DB 实例持久化）。DI 设计：`PlayKeychainDB(directoryURL:)` 注入临时目录 + `PlayKeychain.playChainDB` 可替换（生产恒为 .shared）；依赖闭包 6 文件双编译进测试 target（PlayedApple/PlayedAppleDB/PlayedAppleDBConstants/PlaySettings/PCLog/DiscordActivity，均无 +load 副作用）。
+- **附带修复 2 个真实生产 bug**（用例暴露）：① `connectToDB` 短路逻辑——`alreadyCreated` 在 `sqlite3_open`（会创建空文件）之前检查，全新 DB 上 `!alreadyCreated` 为真导致 `structDB` 从不执行、首连必失败 errSecIO（生产中被 db 文件跨启动持久化掩盖，仅首个 keychain 操作失败；测试每用例全新临时目录故必现）；修复为每次连接都跑幂等 structDB。② `delete` 的 `sqlite3_step == SQLITE_OK` 判断——DELETE 成功返回 SQLITE_DONE，导致 SecItemDelete 模拟层**删除成功却返回 errSecIO**；修为 SQLITE_DONE。另：PlayedAppleDBConstants.swift 补上显式 `import Security`（原先靠 PlayTools 桥接头才编译通过，双编译进无桥接头的测试 target 时暴露）。全套 32 用例绿（21 旧 + 11 新）。
 
 ### 2.5 TouchSink seam
 - **任务**：`ActionDispatcher` → `Toucher` 之间抽协议，逻辑层可注入 fake sink 单测分发正确性。

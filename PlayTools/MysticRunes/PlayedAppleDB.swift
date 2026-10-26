@@ -12,8 +12,21 @@ import SQLite3
 class PlayKeychainDB: NSObject {
     public static let shared = PlayKeychainDB()
 
+    private let dbDirectoryURL: URL
     private var dbLock: DispatchSemaphore = .init(value: 1)
     private var dbVersion: Int = 1
+
+    /// `directoryURL` overrides the PlayChain directory (used by unit tests to
+    /// get an isolated, throwaway SQLite database).
+    init(directoryURL: URL? = nil) {
+        if let directoryURL = directoryURL {
+            dbDirectoryURL = directoryURL
+        } else {
+            dbDirectoryURL = URL(fileURLWithPath: "/Users/\(NSUserName())/Library/Containers/io.playcover.PlayCover")
+                .appendingPathComponent("PlayChain")
+        }
+        super.init()
+    }
 
     func query(_ attributes: NSDictionary) -> [NSMutableDictionary]? {
         guard let tableName = attributes[kSecClass] as? String,
@@ -198,7 +211,7 @@ class PlayKeychainDB: NSObject {
                 return false
             }
 
-            return sqlite3_step(stmt) == SQLITE_OK
+            return sqlite3_step(stmt) == SQLITE_DONE
         }) else { return false }
 
         return true
@@ -238,11 +251,7 @@ class PlayKeychainDB: NSObject {
     private func connectToDB() -> OpaquePointer? {
         var sqlite3DB: OpaquePointer?
         let bundleID = Bundle.main.infoDictionary?["CFBundleIdentifier"] as? String ?? "Shared"
-        let keychainDB = URL(fileURLWithPath: "/Users/\(NSUserName())/Library/Containers/io.playcover.PlayCover")
-            .appendingPathComponent("PlayChain")
-            .appendingPathComponent("\(bundleID).db")
-
-        let alreadyCreated = FileManager.default.fileExists(atPath: keychainDB.path)
+        let keychainDB = dbDirectoryURL.appendingPathComponent("\(bundleID).db")
 
         guard sqlite3_open(keychainDB.path, &sqlite3DB) == SQLITE_OK,
               let sqlite3DB = sqlite3DB else {
@@ -250,7 +259,10 @@ class PlayKeychainDB: NSObject {
             return nil
         }
 
-        if !alreadyCreated || !structDB(sqlite3DB) {
+        // sqlite3_open creates an empty file: structDB must run for a fresh
+        // database too, or every first operation on it fails with errSecIO.
+        // CREATE TABLE IF NOT EXISTS keeps this idempotent for existing files.
+        if !structDB(sqlite3DB) {
             _ = disconnectFromDB(sqlite3DB)
             return nil
         }
@@ -266,7 +278,9 @@ class PlayKeychainDB: NSObject {
 
         return true
     }
+}
 
+extension PlayKeychainDB {
     private func encodeData(stmt: OpaquePointer, index: Int32, value: CFTypeRef) -> Bool {
         let sqliteTransient = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
         var result = SQLITE_FAIL

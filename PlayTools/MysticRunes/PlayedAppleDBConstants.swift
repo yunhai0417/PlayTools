@@ -5,6 +5,8 @@
 //  Created by TheMoonThatRises on 9/12/24.
 //
 
+import Security
+
 struct PlayedAppleDBConstants {
     // https://developer.apple.com/documentation/security/keychain_services/keychain_items/item_class_keys_and_values
     // Synchronizable does not matter.
