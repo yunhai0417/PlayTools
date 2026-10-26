@@ -213,29 +213,35 @@ public class PlayScreen: NSObject {
     }
 }
 
+/// Live keymap coordinate converter, rebuilt per access so window resizes
+/// are picked up (same timing as the former direct screen reads).
+var keymapCoordinates: KeymapCoordinates {
+    KeymapCoordinates(screenWidth: screen.width, screenHeight: screen.height)
+}
+
 extension CGFloat {
     var relativeY: CGFloat {
-        self / screen.height
+        keymapCoordinates.relative(y: self)
     }
 
     var relativeX: CGFloat {
-        self / screen.width
+        keymapCoordinates.relative(x: self)
     }
 
     var relativeSize: CGFloat {
-        self / screen.percent
+        keymapCoordinates.relative(size: self)
     }
 
     var absoluteSize: CGFloat {
-        self * screen.percent
+        keymapCoordinates.absolute(size: self)
     }
 
     var absoluteX: CGFloat {
-        self * screen.width
+        keymapCoordinates.absolute(x: self)
     }
 
     var absoluteY: CGFloat {
-        self * screen.height
+        keymapCoordinates.absolute(y: self)
     }
 }
 

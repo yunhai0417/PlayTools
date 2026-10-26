@@ -95,6 +95,7 @@
 
 ### 2.3 键位坐标换算用例
 - **任务**：keymap 相对坐标（0-1）↔ 屏幕绝对坐标换算抽纯函数 + 用例（含 inverse、分辨率变化）。
+- **状态**：✅ 完成 — 新增 `PlayTools/Utils/KeymapCoordinates.swift`（CoreGraphics only，实时屏幕宽高注入；absolute/relative 的 x/y/size 六个换算 + percent=长边/100 语义），双编译进 PlayToolsTests。`PlayScreen.swift` 的 `CGFloat` relative/absolute 扩展改为委托每次访问重建的 `keymapCoordinates`（与原直接读 `screen` 的实时性一致，窗口缩放即时生效）。9 个用例：轴映射、percent 单位、往返一致性、三种分辨率下同一相对坐标、inverse 竖屏轴交换、0/1 边界。
 
 ### 2.4 PlayChain 序列化用例
 - **任务**：`PlayKeychain` add/copyMatching/update/delete 的 plist 语义 + `PlayKeychainDB` SQLite 持久化用例（临时目录）。
