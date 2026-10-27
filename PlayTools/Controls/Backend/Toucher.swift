@@ -22,23 +22,20 @@ class Toucher {
     static func touchcam(point: CGPoint, phase: UITouch.Phase, tid: inout Int?,
                          // Name info for debug use
                          actionName: String, keyName: String) {
+        guard TouchSession.shouldEmit(phase: phase, tid: tid) else {
+            return
+        }
         if phase == UITouch.Phase.began {
-            if tid != nil {
-                return
-            }
-            tid = -1
+            tid = TouchSession.allocatingTid
             keyWindow = screen.keyWindow
             keyView = keyWindow!.hitTest(point, with: nil)
-        } else if tid == nil {
-            return
         }
         var recordId = tid!
         tid = PTFakeMetaTouch.fakeTouchId(tid!, at: point, with: phase, in: keyWindow, on: keyView)
         writeLog(logMessage:
                 "\(phase.rawValue.description) \(tid!.description) \(point.debugDescription)")
-        if tid! < 0 {
-            tid = nil
-        } else {
+        tid = TouchSession.normalizeTid(tid!)
+        if tid != nil {
             recordId = tid!
         }
         DebugModel.instance.record(point: point, phase: phase, tid: recordId,
@@ -84,3 +81,18 @@ class Toucher {
         file.write(data)
     }
 }
+
+/// Default sink forwarding to the `Toucher` static backend.
+final class ToucherSink: TouchSink {
+    static let shared = ToucherSink()
+    private init() {}
+
+    func touchcam(point: CGPoint, phase: UITouch.Phase, tid: inout Int?,
+                  actionName: String, keyName: String) {
+        Toucher.touchcam(point: point, phase: phase, tid: &tid,
+                         actionName: actionName, keyName: keyName)
+    }
+}
+
+/// Injectable global sink. Actions emit fake touches through this seam.
+var touchSink: TouchSink = ToucherSink.shared

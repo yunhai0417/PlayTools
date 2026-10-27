@@ -13,7 +13,7 @@ protocol Action {
 
 class ButtonAction: Action {
     func invalidate() {
-        Toucher.touchcam(point: point, phase: UITouch.Phase.ended, tid: &id,
+        touchSink.touchcam(point: point, phase: UITouch.Phase.ended, tid: &id,
                          actionName: "Button", keyName: keyName)
     }
 
@@ -44,10 +44,10 @@ class ButtonAction: Action {
 
     func update(pressed: Bool) {
         if pressed {
-            Toucher.touchcam(point: point, phase: UITouch.Phase.began, tid: &id,
+            touchSink.touchcam(point: point, phase: UITouch.Phase.began, tid: &id,
                              actionName: "Button", keyName: keyName)
         } else {
-            Toucher.touchcam(point: point, phase: UITouch.Phase.ended, tid: &id,
+            touchSink.touchcam(point: point, phase: UITouch.Phase.ended, tid: &id,
                              actionName: "Button", keyName: keyName)
         }
     }
@@ -63,7 +63,7 @@ class DraggableButtonAction: ButtonAction {
 
     override func update(pressed: Bool) {
         if pressed {
-            Toucher.touchcam(point: point, phase: UITouch.Phase.began, tid: &id,
+            touchSink.touchcam(point: point, phase: UITouch.Phase.began, tid: &id,
                              actionName: "DraggableButton", keyName: keyName)
             self.releasePoint = point
             ActionDispatcher.register(key: KeyCodeNames.mouseMove,
@@ -73,7 +73,7 @@ class DraggableButtonAction: ButtonAction {
                 AKInterface.shared!.hideCursor()
             }
         } else {
-            Toucher.touchcam(point: releasePoint, phase: UITouch.Phase.ended, tid: &id,
+            touchSink.touchcam(point: releasePoint, phase: UITouch.Phase.ended, tid: &id,
                              actionName: "DraggableButton", keyName: keyName)
             if id == nil {
                 ActionDispatcher.unregister(key: KeyCodeNames.mouseMove)
@@ -92,7 +92,7 @@ class DraggableButtonAction: ButtonAction {
     func onMouseMoved(deltaX: CGFloat, deltaY: CGFloat) {
         self.releasePoint.x += deltaX
         self.releasePoint.y -= deltaY
-        Toucher.touchcam(point: self.releasePoint, phase: UITouch.Phase.moved, tid: &id,
+        touchSink.touchcam(point: self.releasePoint, phase: UITouch.Phase.moved, tid: &id,
                          actionName: "DraggableButton", keyName: keyName)
     }
 }
@@ -126,30 +126,30 @@ class ContinuousJoystickAction: Action {
         if dis < 16 {
             if begun {
                 begun = false
-                Toucher.touchcam(point: point, phase: UITouch.Phase.ended, tid: &id,
+                touchSink.touchcam(point: point, phase: UITouch.Phase.ended, tid: &id,
                                  actionName: "ControllerJoystick", keyName: key)
             }
         } else if !begun {
             begun = true
             beginTouch(point)
         } else {
-            Toucher.touchcam(point: point, phase: UITouch.Phase.moved, tid: &id,
+            touchSink.touchcam(point: point, phase: UITouch.Phase.moved, tid: &id,
                              actionName: "ControllerJoystick", keyName: key)
         }
     }
 
     func beginTouch(_ point: CGPoint) {
         if mode == .FIXED {
-            Toucher.touchcam(point: point, phase: UITouch.Phase.began, tid: &id,
+            touchSink.touchcam(point: point, phase: UITouch.Phase.began, tid: &id,
                              actionName: "ControllerJoystick", keyName: key)
         } else if mode == .FLOATING {
-            Toucher.touchcam(point: self.center, phase: UITouch.Phase.began, tid: &id,
+            touchSink.touchcam(point: self.center, phase: UITouch.Phase.began, tid: &id,
                              actionName: "ControllerJoystick", keyName: key)
             PlayInput.touchQueue.asyncAfter(deadline: .now() + 0.04, qos: .userInitiated) {
                 if self.id == nil {
                     return
                 }
-                Toucher.touchcam(point: point, phase: UITouch.Phase.moved, tid: &self.id,
+                touchSink.touchcam(point: point, phase: UITouch.Phase.moved, tid: &self.id,
                                  actionName: "ControllerJoystick", keyName: self.key)
             }
         }
@@ -168,7 +168,7 @@ class ContinuousJoystickAction: Action {
     }
 
     func invalidate() {
-        Toucher.touchcam(point: CGPoint(x: 10, y: 10), phase: UITouch.Phase.ended, tid: &id,
+        touchSink.touchcam(point: CGPoint(x: 10, y: 10), phase: UITouch.Phase.ended, tid: &id,
                          actionName: "ControllerJoystick", keyName: key)
     }
 }
@@ -210,7 +210,7 @@ class JoystickAction: Action {
     }
 
     func invalidate() {
-        Toucher.touchcam(point: center, phase: UITouch.Phase.ended, tid: &id,
+        touchSink.touchcam(point: center, phase: UITouch.Phase.ended, tid: &id,
                          actionName: "KeyboardJoystick", keyName: "Keyboard")
     }
 
@@ -263,12 +263,12 @@ class JoystickAction: Action {
         let moving = id != nil
         if atCenter() {
             if moving {
-                Toucher.touchcam(point: touch, phase: UITouch.Phase.ended, tid: &id,
+                touchSink.touchcam(point: touch, phase: UITouch.Phase.ended, tid: &id,
                                  actionName: "KeyboardJoystick", keyName: "Keyboard")
             }
         } else {
             if moving {
-                Toucher.touchcam(point: touch, phase: UITouch.Phase.moved, tid: &id,
+                touchSink.touchcam(point: touch, phase: UITouch.Phase.moved, tid: &id,
                                  actionName: "KeyboardJoystick", keyName: "Keyboard")
             } else {
                 begin()
@@ -278,13 +278,13 @@ class JoystickAction: Action {
 
     func handleFree() {
         handleCommon {
-            Toucher.touchcam(point: self.center, phase: UITouch.Phase.began, tid: &id,
+            touchSink.touchcam(point: self.center, phase: UITouch.Phase.began, tid: &id,
                              actionName: "KeyboardJoystick", keyName: "Keyboard")
             PlayInput.touchQueue.asyncAfter(deadline: .now() + 0.04, qos: .userInitiated) {
                 if self.id == nil {
                     return
                 }
-                Toucher.touchcam(point: self.touch, phase: UITouch.Phase.moved, tid: &self.id,
+                touchSink.touchcam(point: self.touch, phase: UITouch.Phase.moved, tid: &self.id,
                                  actionName: "KeyboardJoystick", keyName: "Keyboard")
             } // end closure
         }
@@ -292,7 +292,7 @@ class JoystickAction: Action {
 
     func handleFixed() {
         handleCommon {
-            Toucher.touchcam(point: self.touch, phase: UITouch.Phase.began, tid: &id,
+            touchSink.touchcam(point: self.touch, phase: UITouch.Phase.began, tid: &id,
                              actionName: "KeyboardJoystick", keyName: "Keyboard")
         }
     }
@@ -428,7 +428,7 @@ class SwipeAction: Action {
             guard let start = from() else {return}
             location = start
             counter = 0
-            Toucher.touchcam(point: location, phase: UITouch.Phase.began, tid: &id,
+            touchSink.touchcam(point: location, phase: UITouch.Phase.began, tid: &id,
                              actionName: actionName, keyName: keyName)
             timer.resume()
         } else {
@@ -438,7 +438,7 @@ class SwipeAction: Action {
             }
             // 1. Put location update after touch action, so that final `end` touch has different location
             // 2. If `began` touched, do not `move` touch at the same time, otherwise the two may conflict
-            Toucher.touchcam(point: self.location, phase: UITouch.Phase.moved, tid: &id,
+            touchSink.touchcam(point: self.location, phase: UITouch.Phase.moved, tid: &id,
                              actionName: actionName, keyName: keyName)
         }
         // Scale movement down, so that an edge reset won't cause a too short touch sequence
@@ -476,7 +476,7 @@ class SwipeAction: Action {
         if id == nil {
             return
         }
-        Toucher.touchcam(point: self.location, phase: UITouch.Phase.ended, tid: &id,
+        touchSink.touchcam(point: self.location, phase: UITouch.Phase.ended, tid: &id,
                          actionName: actionName, keyName: keyName)
         // Touch might somehow fail to end
         if id == nil {
@@ -507,7 +507,7 @@ class FakeMouseAction: Action {
 //        DispatchQueue.main.async {
 //            Toast.showHint(title: "Fake mouse pressed", text: ["\(self.pos)"])
 //        }
-        Toucher.touchcam(point: pos, phase: UITouch.Phase.began, tid: &id,
+        touchSink.touchcam(point: pos, phase: UITouch.Phase.began, tid: &id,
                          actionName: "FakeMouse", keyName: "FakeMouse")
         ActionDispatcher.register(key: KeyCodeNames.fakeMouse,
                                   handler: movementHandler,
@@ -522,7 +522,7 @@ class FakeMouseAction: Action {
 //        DispatchQueue.main.async {
 //            Toast.showHint(title: " lift Fake mouse", text: ["\(self.pos)"])
 //        }
-        Toucher.touchcam(point: pos, phase: UITouch.Phase.ended, tid: &id,
+        touchSink.touchcam(point: pos, phase: UITouch.Phase.ended, tid: &id,
                          actionName: "FakeMouse", keyName: "FakeMouse")
         if id == nil {
             ActionDispatcher.unregister(key: KeyCodeNames.fakeMouse)
@@ -532,13 +532,13 @@ class FakeMouseAction: Action {
     func movementHandler(xValue: CGFloat, yValue: CGFloat) {
         pos.x = xValue
         pos.y = yValue
-        Toucher.touchcam(point: pos, phase: UITouch.Phase.moved, tid: &id,
+        touchSink.touchcam(point: pos, phase: UITouch.Phase.moved, tid: &id,
                          actionName: "FakeMouse", keyName: "FakeMouse")
     }
 
     func invalidate() {
         ActionDispatcher.unregister(key: KeyCodeNames.fakeMouse)
-        Toucher.touchcam(point: pos ?? CGPoint(x: 10, y: 10),
+        touchSink.touchcam(point: pos ?? CGPoint(x: 10, y: 10),
                          phase: UITouch.Phase.ended, tid: &self.id,
                          actionName: "FakeMouse", keyName: "FakeMouse")
     }

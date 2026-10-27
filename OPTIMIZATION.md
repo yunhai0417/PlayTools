@@ -104,6 +104,8 @@
 
 ### 2.5 TouchSink seam
 - **任务**：`ActionDispatcher` → `Toucher` 之间抽协议，逻辑层可注入 fake sink 单测分发正确性。
+- **状态**：✅ 完成 — 新增 `TouchSink` 协议 + 纯逻辑 `TouchSession`（began 分配/重复抑制、moved/ended 孤儿抑制、负 tid 释放会话），双编译进测试 target；`Toucher.touchcam` 的门控逻辑改为复用 `TouchSession`（行为等价）；PlayAction 全部 25 处 `Toucher.touchcam` 调用改走可注入全局 `touchSink`（默认 `ToucherSink.shared` 转发回 Toucher，生产行为不变）。8 个用例：4 门控 + 2 tid 生命周期 + 2 fake sink 经协议类型分发（begin/move/end 序列、重复 began 与孤儿事件抑制）。
+- **遗留**：Action 状态机（JoystickAction 键位→触点换算、CameraAction 限速等）无法双编译——`DraggableButtonAction` 直呼 `AKInterface.shared!`（macOS bundle 协议，测试 target 无此类型），且 ActionDispatcher 依赖 Atomics SPM 包。测 Action 层需先把 AKInterface 调用抽 seam + 测试 target 挂 package，留待后续。
 
 ---
 
