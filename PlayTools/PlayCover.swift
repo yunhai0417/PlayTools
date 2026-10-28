@@ -21,7 +21,7 @@ public class PlayCover: NSObject {
         DiscordIPC.shared.initialize()
 
         if !PlaySettings.shared.safeMode {
-            PCChannelClient.shared.start()
+            startHostChannel()
         }
 
         if PlaySettings.shared.rootWorkDir {
@@ -52,6 +52,27 @@ public class PlayCover: NSObject {
     @objc static public func initMenu(menu: NSObject) {
         guard let menuBuilder = menu as? UIMenuBuilder else { return }
         shared.menuController = MenuController(with: menuBuilder)
+    }
+
+    /// OPTIMIZATION.md phase 4: host command channel. `keymap.update`
+    /// rebuilds the dispatcher on the main queue exactly like the in-game
+    /// "switch keymap" menu entry; `diag.dump` re-exports the hook status
+    /// snapshot the host can then read.
+    private static func startHostChannel() {
+        let client = PCChannelClient.shared
+        client.setHandler(for: PCChannel.cmdKeymapUpdate) { _ in
+            PCLog.channel.info("host updated keymap; rebuilding actions")
+            DispatchQueue.main.async {
+                ActionDispatcher.build()
+            }
+        }
+        client.setHandler(for: PCChannel.cmdDiagDump) { _ in
+            PCLog.channel.info("host requested hook status dump")
+            DispatchQueue.main.async {
+                HookDiagnostics.exportSnapshot()
+            }
+        }
+        client.start()
     }
 
     static public func quitWhenClose() {
