@@ -10,33 +10,8 @@
 import Foundation
 import UIKit
 
-// MARK: - Model
-
-enum HookInstallKind {
-    case instance
-    case exchange
-    case classMethod
-}
-
-struct HookCandidate {
-    let className: String
-    let kind: HookInstallKind
-}
-
-struct HookSpec {
-    /// `always` survives safe mode (menu injection); `optional` is skipped.
-    enum Policy {
-        case always
-        case optional
-    }
-
-    let id: String
-    let selector: String
-    let replacement: String
-    let candidates: [HookCandidate]
-    let policy: HookSpec.Policy
-    let condition: () -> Bool
-}
+// Spec model types (HookSpec / HookCandidate / HookInstallKind) live in
+// HookSpecModel.swift so they can be dual-compiled for tests.
 
 // MARK: - Registry
 
@@ -52,32 +27,41 @@ public final class HookRegistry: NSObject {
         let settings = PlaySettings.shared
         let safeMode = settings.safeMode
 
-        // Version facts, computed once. Probing is still the primary selector:
-        // the 16.3 gate only preserves the original matrix where older systems
-        // installed strictly fewer hooks.
-        var is163OrNewer = false
-        if #available(iOS 16.3, *) { is163OrNewer = true }
-
-        let resizable = settings.resizableWindow
-        let adaptive = settings.adaptiveDisplay
-        let inverse = settings.inverseScreenValues
-        let fixedWindow = settings.windowFixMethod == 1
+        // Environment snapshot, computed once (OPTIMIZATION.md 5.1). Probing
+        // is still the primary selector: the 16.3 gate only preserves the
+        // original matrix where older systems installed strictly fewer hooks.
+        var facts = HookFactsInput()
+        if #available(iOS 16.3, *) { facts.is163OrNewer = true }
+        facts.resizableWindow = settings.resizableWindow
+        facts.adaptiveDisplay = settings.adaptiveDisplay
+        facts.inverseScreenValues = settings.inverseScreenValues
+        facts.windowFixMethod1 = settings.windowFixMethod == 1
+        facts.engineUnreal = PlayInfo.isUnrealEngine
+        facts.systemEncodingChinese = Self.isSystemEncodingChinese()
+        facts.micPermissionSync = settings.checkMicPermissionSync
+        facts.limitMotionFrequency = settings.limitMotionUpdateFrequency
+        facts.disableBuiltinMouse = settings.disableBuiltinMouse
+        facts.unityKeyboardInit = settings.ignoreUnityKeyboardInitializationError
 
         // Original matrix side effect: persist default window size before the
         // default-display hooks read it back (NSObject+Swizzle +load, else branch)
-        if is163OrNewer && !resizable && !adaptive && !fixedWindow {
+        if facts.is163OrNewer && !facts.resizableWindow
+            && !facts.adaptiveDisplay && !facts.windowFixMethod1 {
             let width = CGFloat(settingsDataWindowWidth())
             settings.setValue(NSNumber(value: Float(width)), forKey: "windowSizeWidth")
             let height = CGFloat(settingsDataWindowHeight())
             settings.setValue(NSNumber(value: Float(height)), forKey: "windowSizeHeight")
         }
 
-        let specs = Self.allSpecs(is163OrNewer: is163OrNewer,
-                                  resizable: resizable,
-                                  adaptive: adaptive,
-                                  inverse: inverse,
-                                  fixedWindow: fixedWindow)
+        let specs = HookSpecMatrix.allSpecs(facts: facts)
         install(specs: specs, safeMode: safeMode)
+    }
+
+    /// kCFStringEncodingMacChineseSimp (0x0628) / MacChineseTrad (0x0629):
+    /// the named constants are not exposed to Swift, values from CFString.h.
+    private static func isSystemEncodingChinese() -> Bool {
+        let encoding = CFStringGetSystemEncoding()
+        return encoding == 0x0628 || encoding == 0x0629
     }
 
     /// Window size defaults mirroring the original `get_default_width/height`

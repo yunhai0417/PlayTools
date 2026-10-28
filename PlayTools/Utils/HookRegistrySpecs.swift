@@ -2,13 +2,17 @@
 //  HookRegistrySpecs.swift
 //  PlayTools
 //
-//  Spec builders for HookRegistry, mirroring the original PTSwizzleLoader +load
-//  matrix group by group (OPTIMIZATION.md P1). Keep in sync with the ObjC
-//  hook_* replacement methods in NSObject+Swizzle.m.
+//  Spec matrix mirroring the original PTSwizzleLoader +load matrix group
+//  by group (OPTIMIZATION.md P1). Pure Foundation over a HookFactsInput
+//  snapshot; dual-compiled into PlayToolsTests where the equivalent
+//  data pack (HookRulePackDefaults) is diffed against it. Keep in sync
+//  with the ObjC hook_* replacement methods in NSObject+Swizzle.m.
 //
 
 import Foundation
 
+/// Code representation of the hook matrix. HookRegistry.run() installs
+/// these; the signed data pack (OPTIMIZATION.md 5.1) mirrors them.
 /// Replacement-method bundle for a display variant.
 private struct DisplayVariant {
     let frame: String
@@ -27,13 +31,17 @@ private struct DisplayVariant {
                                                 nativeBounds: "hook_nativeBoundsDefault")
 }
 
-extension HookRegistry {
+enum HookSpecMatrix {
 
-    static func allSpecs(is163OrNewer: Bool,
-                         resizable: Bool,
-                         adaptive: Bool,
-                         inverse: Bool,
-                         fixedWindow: Bool) -> [HookSpec] {
+    /// Pure: every activation input arrives via the snapshot, so the code
+    /// matrix and the data rule pack stay comparable in tests.
+    static func allSpecs(facts: HookFactsInput) -> [HookSpec] {
+        let is163OrNewer = facts.is163OrNewer
+        let resizable = facts.resizableWindow
+        let adaptive = facts.adaptiveDisplay
+        let inverse = facts.inverseScreenValues
+        let fixedWindow = facts.windowFixMethod1
+
         let sceneCandidates = [
             HookCandidate(className: "FBSSceneSettingsCore", kind: .exchange),
             HookCandidate(className: "FBSSceneSettings", kind: .instance)
@@ -71,7 +79,7 @@ extension HookRegistry {
         specs += alwaysSpecs()
 
         // F. conditional app-specific fixes
-        specs += conditionalSpecs()
+        specs += conditionalSpecs(facts: facts)
 
         return specs
     }
@@ -254,7 +262,7 @@ extension HookRegistry {
         ]
     }
 
-    private static func conditionalSpecs() -> [HookSpec] {
+    private static func conditionalSpecs(facts: HookFactsInput) -> [HookSpec] {
         let ueRegexSelector = "_stringByReplacingOccurrencesOfRegularExpressionPattern:"
             + "withTemplate:options:range:"
         let ueRegexReplacement = "hook_stringByReplacingOccurrencesOfRegularExpressionPattern:"
@@ -265,44 +273,37 @@ extension HookRegistry {
                      replacement: ueRegexReplacement,
                      candidates: [HookCandidate(className: "NSString", kind: .instance)],
                      policy: .optional,
-                     condition: { PlayInfo.isUnrealEngine && isSystemEncodingChinese() }),
+                     condition: { facts.engineUnreal && facts.systemEncodingChinese }),
             HookSpec(id: "fix.micPermissionSync",
                      selector: "requestRecordPermission:",
                      replacement: "hook_requestRecordPermission:",
                      candidates: [HookCandidate(className: "AVAudioSession", kind: .instance)],
                      policy: .optional,
-                     condition: { PlaySettings.shared.checkMicPermissionSync }),
+                     condition: { facts.micPermissionSync }),
             HookSpec(id: "fix.limitMotionFrequency",
                      selector: "init",
                      replacement: "hook_CMMotionManager_init",
                      candidates: [HookCandidate(className: "CMMotionManager", kind: .instance)],
                      policy: .optional,
-                     condition: { PlaySettings.shared.limitMotionUpdateFrequency }),
+                     condition: { facts.limitMotionFrequency }),
             HookSpec(id: "fix.disableBuiltinMouse.current",
                      selector: "current",
                      replacement: "hook_GCMouse_current",
                      candidates: [HookCandidate(className: "GCMouse", kind: .classMethod)],
                      policy: .optional,
-                     condition: { PlaySettings.shared.disableBuiltinMouse }),
+                     condition: { facts.disableBuiltinMouse }),
             HookSpec(id: "fix.disableBuiltinMouse.mice",
                      selector: "mice",
                      replacement: "hook_GCMouse_mice",
                      candidates: [HookCandidate(className: "GCMouse", kind: .classMethod)],
                      policy: .optional,
-                     condition: { PlaySettings.shared.disableBuiltinMouse }),
+                     condition: { facts.disableBuiltinMouse }),
             HookSpec(id: "fix.unityKeyboardInit",
                      selector: "Initialize",
                      replacement: "hook_Unity_KeyboardDelegate_Initialize",
                      candidates: [HookCandidate(className: "KeyboardDelegate", kind: .classMethod)],
                      policy: .optional,
-                     condition: { PlaySettings.shared.ignoreUnityKeyboardInitializationError })
+                     condition: { facts.unityKeyboardInit })
         ]
-    }
-
-    private static func isSystemEncodingChinese() -> Bool {
-        // kCFStringEncodingMacChineseSimp (0x0628) / MacChineseTrad (0x0629):
-        // the named constants are not exposed to Swift, values from CFString.h.
-        let encoding = CFStringGetSystemEncoding()
-        return encoding == 0x0628 || encoding == 0x0629
     }
 }

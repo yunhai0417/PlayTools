@@ -143,7 +143,12 @@
 ### 5.1 适配规则数据化（原 #7）
 - **任务**：hook 生效条件（bundleId/引擎检测/SDK 指纹）外置为**签名数据包**（先内置打包，后远程更新）；含版本号与离线兜底。
 - **风险**：远程更新通道即攻击面，必须验签 + 降级策略。
-- **状态**：🟡 数据层已落地：`HookRulePack.swift`（纯模型：规则 = selector/replacement/candidates/policy + `when` 命名事实条件，AND 语义，未知事实**fail-closed**——错装 hook 比漏装更危险；版本校验、重复 id/空字段校验）+ `HookRulePackLoader.swift`（Ed25519 签名信封：payload 原始字节签名，免 canonical JSON；任何失败返回 nil 走兜底）。14 个用例（求值/校验/签名往返/篡改拒收/换钥拒收/垃圾拒收/合法签名但版本超期拒收），全套 77 绿。待做：内置默认包（镜像现 allSpecs 矩阵）+ 事实采集 + 适配到 HookSpec + 安装路径切换。
+- **状态**：🟡 数据层+镜像已落地：
+  - `HookRulePack.swift`（纯模型：规则 = selector/replacement/candidates/policy + `when` 命名事实条件，AND 语义，未知事实**fail-closed**——错装 hook 比漏装更危险；版本校验、重复 id/空字段校验）+ `HookRulePackLoader.swift`（Ed25519 签名信封：payload 原始字节签名，免 canonical JSON；任何失败返回 nil 走兜底）。
+  - `HookFactsInput`（启动期环境快照，纯结构）+ `HookRuleFacts.dict`（事实命名协议）；`allSpecs` 重构为纯函数（`HookSpecMatrix.allSpecs(facts:)`，F 组条件改为捕获 bool，PlayInfo/PlaySettings 读取移到 run()）；`HookSpecModel.swift` 拆出纯模型使 spec 矩阵可双编译。
+  - `HookRulePackDefaults.bundledJSON`：37 条规则逐条镜像代码矩阵；`HookRuleAdapter` 把激活规则映射回 HookSpec（条件已在事实快照求值）。
+  - **等价测试**（防漂移）：32 个显示矩阵组合 ×2 个条件修复组合，断言 pack 路径与代码路径产出**完全相同**的安装集（id/selector/replacement/candidates/policy 全序比较）。全套 81 绿。
+  - 待做：安装路径切换（外部签名包 → 内置包 → 代码矩阵三级兜底）+ 外部包路径约定 + 私钥/公钥管理。
 
 ---
 
