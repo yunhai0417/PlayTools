@@ -9,15 +9,6 @@ import AppKit
 import CoreGraphics
 import Foundation
 
-// Add a lightweight struct so we can decode only the flag we care about
-private struct AKAppSettingsData: Codable {
-    var hideTitleBar: Bool?
-    var floatingWindow: Bool?
-    var resolution: Int?
-    var resizableAspectRatioWidth: Int?
-    var resizableAspectRatioHeight: Int?
-}
-
 class AKPlugin: NSObject, Plugin {
     required override init() {
         super.init()
@@ -302,13 +293,13 @@ class AKPlugin: NSObject, Plugin {
         return NSSize(width: width, height: height)
     }
 
-    fileprivate static var akAppSettingsData: AKAppSettingsData? = {
+    fileprivate static var akAppSettingsData: AppSettingsData? = {
         let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
         let settingsURL = URL(fileURLWithPath: "/Users/\(NSUserName())/Library/Containers/io.playcover.PlayCover")
             .appendingPathComponent("App Settings")
             .appendingPathComponent("\(bundleIdentifier).plist")
         guard let data = try? Data(contentsOf: settingsURL),
-              let decoded = try? PropertyListDecoder().decode(AKAppSettingsData.self, from: data) else {
+              let decoded = try? PropertyListDecoder().decode(AppSettingsData.self, from: data) else {
             return nil
         }
         return decoded

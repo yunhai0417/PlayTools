@@ -114,6 +114,7 @@
 ### 3.1 仓库内去重（先做）
 - **任务**：删除 `AKPlugin.swift` 的 `AKAppSettingsData`；`AppSettingsData` 移入单文件 `PlayToolsContracts.swift`，同时加入 PlayTools 与 AKInterface 两个 target 的 Sources（单一源文件双编译，无包依赖）。
 - **验收**：仓库内 schema 只剩一份；AKInterface 行为不变（hideTitleBar/floatingWindow/aspectRatio 读取路径改走共享类型）。
+- **状态**：✅ 完成 — 仓库根新增 `PlayToolsContracts.swift`（`AppSettingsData` 单一来源，三 target 编译：PlayTools / AKInterface / PlayToolsTests）；`DiscordActivity.swift` 追加编译进 AKInterface（schema 依赖，纯 Foundation）；`AKPlugin.swift` 删除 `AKAppSettingsData` 改解码共享类型，三处读取路径（hideTitleBar/floatingWindow/aspectRatio）零改动；`PlaySettings.swift` 移除重复 struct。**顺带落地 3.2 要求的 decode 兼容规则**：`AppSettingsData` 自定义 `init(from:)` 全字段 `decodeIfPresent ?? 默认值`——旧宿主写入的缺字段 plist 不再把整个设置重置为默认（此前任何缺失键都会让 decode 抛错兜底全默认，新增字段即砖）；`discordActivity` 子解码失败降级默认实例。4 个用例（部分 plist 保留已写值、空 plist 全默认、损坏 discordActivity 降级、编解码往返）。AKInterface 双架构独立构建验证通过（`xcodebuild -target AKInterface`）。全套 44 用例绿。
 
 ### 3.2 抽 SwiftPM 契约包
 - **任务**：`PlayToolsContract` package（纯 Foundation Codable），本仓库与 fork 的 PlayCover 共同依赖；`version` 字段配套 decode 兼容规则。
