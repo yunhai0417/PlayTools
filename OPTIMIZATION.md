@@ -143,6 +143,7 @@
 ### 5.1 适配规则数据化（原 #7）
 - **任务**：hook 生效条件（bundleId/引擎检测/SDK 指纹）外置为**签名数据包**（先内置打包，后远程更新）；含版本号与离线兜底。
 - **风险**：远程更新通道即攻击面，必须验签 + 降级策略。
+- **状态**：🟡 数据层已落地：`HookRulePack.swift`（纯模型：规则 = selector/replacement/candidates/policy + `when` 命名事实条件，AND 语义，未知事实**fail-closed**——错装 hook 比漏装更危险；版本校验、重复 id/空字段校验）+ `HookRulePackLoader.swift`（Ed25519 签名信封：payload 原始字节签名，免 canonical JSON；任何失败返回 nil 走兜底）。14 个用例（求值/校验/签名往返/篡改拒收/换钥拒收/垃圾拒收/合法签名但版本超期拒收），全套 77 绿。待做：内置默认包（镜像现 allSpecs 矩阵）+ 事实采集 + 适配到 HookSpec + 安装路径切换。
 
 ---
 
