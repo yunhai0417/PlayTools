@@ -20,6 +20,10 @@ public class PlayCover: NSObject {
         PlayInput.shared.initialize()
         DiscordIPC.shared.initialize()
 
+        if !PlaySettings.shared.safeMode {
+            PCChannelClient.shared.start()
+        }
+
         if PlaySettings.shared.rootWorkDir {
             // Change the working directory to / just like iOS
             FileManager.default.changeCurrentDirectoryPath("/")

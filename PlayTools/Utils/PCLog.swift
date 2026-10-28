@@ -42,4 +42,5 @@ public final class PCLog: NSObject {
     public static let bypass = PCLogCategory(category: "bypass")
     public static let plugin = PCLogCategory(category: "plugin")
     public static let settings = PCLogCategory(category: "settings")
+    public static let channel = PCLogCategory(category: "channel")
 }

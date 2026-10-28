@@ -127,11 +127,11 @@
 
 - **任务**：
   1. ✅ 协议：Unix domain socket + JSON lines，版本握手；指令集 `keymap.update` / `settings.refresh` / `diag.dump` / `log.level`（`PlayTools/Utils/PCChannel.swift`，纯 Foundation，双编译进 PlayToolsTests；`isOK` 字段经 CodingKeys 映射保持线上 JSON 键 `ok`；未知命令/未知字段忽略保证前向兼容。8 个用例：编解码往返、行分帧含半包、前向兼容。）
-  2. 运行时侧客户端（PlayTools 内，失败静默降级为现行为）
+  2. ✅ 运行时侧客户端（`PCChannelSession` 字节流重组 + `PCChannelTransport`/`PCChannelSocketTransport` POSIX AF_UNIX 阻塞传输 + `PCChannelClient` 工作线程（握手、退避重连 0.5→8s 后放弃、命令分发表）。`PlayCover.launch` 非 safeMode 时启动。失败全程静默：无宿主时行为与现状完全一致。测试：分帧重组 5 例（含多字节字符跨 chunk、坏行丢弃）+ POSIX 传输 3 例（含 sun_path 超长拒绝、真 socket 往返与 EOF），全套 60 绿。）
   3. 宿主侧服务端（fork 的 PlayCover）
   4. 第一个落地功能：键位热更新（不重启游戏改键位）
 - **验收**：宿主改键位 → 游戏内 1s 内生效；通道断开时一切回退现状。
-- **状态**：🟡 4.1 协议编解码已落地（测试 52 绿）；4.2 运行时 UDS 客户端进行中。
+- **状态**：🟡 4.1 协议编解码、4.2 运行时 UDS 客户端已落地（测试 60 绿）；4.3 宿主侧服务端（PlayCover 仓库）待做；4.4 键位热更新待做。
 
 ---
 

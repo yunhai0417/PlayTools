@@ -42,6 +42,13 @@
 		CE0A10012D1A4B0000000071 /* PCChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000070 /* PCChannel.swift */; };
 		CE0A10012D1A4B0000000072 /* PCChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000070 /* PCChannel.swift */; };
 		CE0A10012D1A4B0000000074 /* PCChannelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000073 /* PCChannelTests.swift */; };
+		CE0A10012D1A4B0000000081 /* PCChannelSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000080 /* PCChannelSession.swift */; };
+		CE0A10012D1A4B0000000082 /* PCChannelSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000080 /* PCChannelSession.swift */; };
+		CE0A10012D1A4B0000000084 /* PCChannelTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000083 /* PCChannelTransport.swift */; };
+		CE0A10012D1A4B0000000085 /* PCChannelTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000083 /* PCChannelTransport.swift */; };
+		CE0A10012D1A4B0000000087 /* PCChannelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000086 /* PCChannelClient.swift */; };
+		CE0A10012D1A4B0000000089 /* PCChannelSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000088 /* PCChannelSessionTests.swift */; };
+		CE0A10012D1A4B0000000091 /* PCChannelTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000090 /* PCChannelTransportTests.swift */; };
 		6E84A14528D0F94E00BF7495 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA818CBA287ABFD5000BEE9D /* UIKit.framework */; };
 		6E84A15028D0F97500BF7495 /* AKInterface.bundle in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		951D8275299D097C00D35B20 /* Playtools.strings in Resources */ = {isa = PBXBuildFile; fileRef = 951D8277299D097C00D35B20 /* Playtools.strings */; };
@@ -157,6 +164,11 @@
 		CE0A10012D1A4B0000000065 /* PlayToolsContractsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayToolsContractsTests.swift; sourceTree = "<group>"; };
 		CE0A10012D1A4B0000000070 /* PCChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannel.swift; sourceTree = "<group>"; };
 		CE0A10012D1A4B0000000073 /* PCChannelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelTests.swift; sourceTree = "<group>"; };
+		CE0A10012D1A4B0000000080 /* PCChannelSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelSession.swift; sourceTree = "<group>"; };
+		CE0A10012D1A4B0000000083 /* PCChannelTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelTransport.swift; sourceTree = "<group>"; };
+		CE0A10012D1A4B0000000086 /* PCChannelClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelClient.swift; sourceTree = "<group>"; };
+		CE0A10012D1A4B0000000088 /* PCChannelSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelSessionTests.swift; sourceTree = "<group>"; };
+		CE0A10012D1A4B0000000090 /* PCChannelTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelTransportTests.swift; sourceTree = "<group>"; };
 		6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AKInterface.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		951D8276299D097C00D35B20 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Playtools.strings; sourceTree = "<group>"; };
 		951D8278299D098000D35B20 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Playtools.strings"; sourceTree = "<group>"; };
@@ -503,6 +515,8 @@
 				CE0A10012D1A4B0000000053 /* TouchSinkTests.swift */,
 				CE0A10012D1A4B0000000065 /* PlayToolsContractsTests.swift */,
 				CE0A10012D1A4B0000000073 /* PCChannelTests.swift */,
+				CE0A10012D1A4B0000000088 /* PCChannelSessionTests.swift */,
+				CE0A10012D1A4B0000000090 /* PCChannelTransportTests.swift */,
 			);
 			path = PlayToolsTests;
 			sourceTree = "<group>";
@@ -564,6 +578,9 @@
 				CE0A10012D1A4B0000000020 /* ScreenGeometry.swift */,
 				CE0A10012D1A4B0000000030 /* KeymapCoordinates.swift */,
 				CE0A10012D1A4B0000000070 /* PCChannel.swift */,
+				CE0A10012D1A4B0000000080 /* PCChannelSession.swift */,
+				CE0A10012D1A4B0000000083 /* PCChannelTransport.swift */,
+				CE0A10012D1A4B0000000086 /* PCChannelClient.swift */,
 				B46C02C62C634AB5007637AB /* BatteryLevel.m */,
 				B46C02C82C634C60007637AB /* BatteryLevel.h */,
 				B444BB0B2F49C1D100ADCC5A /* ControllerFocus.m */,
@@ -863,6 +880,9 @@
 				CE0A10012D1A4B0000000051 /* TouchSink.swift in Sources */,
 				CE0A10012D1A4B0000000061 /* PlayToolsContracts.swift in Sources */,
 				CE0A10012D1A4B0000000071 /* PCChannel.swift in Sources */,
+				CE0A10012D1A4B0000000081 /* PCChannelSession.swift in Sources */,
+				CE0A10012D1A4B0000000084 /* PCChannelTransport.swift in Sources */,
+				CE0A10012D1A4B0000000087 /* PCChannelClient.swift in Sources */,
 				9562D16F2AB50D34002C329D /* ActionDispatcher.swift in Sources */,
 				2847AE48298EFC0F00B0F983 /* PlayScreen.swift in Sources */,
 				9562D1532AB484FD002C329D /* EventAdapter.swift in Sources */,
@@ -925,7 +945,11 @@
 				CE0A10012D1A4B0000000063 /* PlayToolsContracts.swift in Sources */,
 				CE0A10012D1A4B0000000066 /* PlayToolsContractsTests.swift in Sources */,
 				CE0A10012D1A4B0000000072 /* PCChannel.swift in Sources */,
+				CE0A10012D1A4B0000000082 /* PCChannelSession.swift in Sources */,
+				CE0A10012D1A4B0000000085 /* PCChannelTransport.swift in Sources */,
 				CE0A10012D1A4B0000000074 /* PCChannelTests.swift in Sources */,
+				CE0A10012D1A4B0000000089 /* PCChannelSessionTests.swift in Sources */,
+				CE0A10012D1A4B0000000091 /* PCChannelTransportTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
