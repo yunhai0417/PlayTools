@@ -139,6 +139,11 @@
 
 ### 5.0 前置 spike：编辑器外置权限链路（原 #6 的闸门）
 - **任务**：验证外部进程方案三要素——a) 独立 NSWindow 高层级叠加不抢游戏焦点；b) Accessibility API 获取游戏窗口 bounds（需用户授权，验证授权流程与拒授权降级）；c) 窗口坐标 ↔ 游戏内坐标换算精度。spike 不通过则 #6 不立项。
+- **状态**：🟡 验证工具已就绪（`Spike/EditorExternalizationSpike/main.swift`，独立 swiftc 编译，不进 Xcode 工程；swiftlint --strict 通过）：
+  - a) `.borderless + .nonactivatingPanel` 浮层，`orderFrontRegardless` + `ignoresMouseEvents`，每秒跟随目标窗口；
+  - b) `AXIsProcessTrustedWithOptions` 授权门，未授权时打印降级路径并以 EX_TEMPFAIL 退出（不崩溃）；`kAXWindowsAttribute/kAXPositionAttribute/kAXSizeAttribute` 取 bounds；
+  - c) AX 左上原点 ↔ 游戏左下原点换算含多屏 offset，每秒输出换算结果供比对。
+  - **手动验收步骤**（需真机 + 真游戏）：`swiftc -O -o spike main.swift -framework AppKit -framework ApplicationServices` → 启动游戏取 pid → `./spike <pid> 15` → 核对：① 游戏全程保持键盘焦点（点击浮层区域也不切换）；② 移动/缩放游戏窗口时红色浮层 1s 内贴合；③ 输出的 game-space origin 与游戏内已知点位吻合。三项全过则 #6 立项。
 
 ### 5.1 适配规则数据化（原 #7）
 - **任务**：hook 生效条件（bundleId/引擎检测/SDK 指纹）外置为**签名数据包**（先内置打包，后远程更新）；含版本号与离线兜底。
