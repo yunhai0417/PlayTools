@@ -66,6 +66,10 @@
 		CE0A10012D1A4B00000000BB /* HookRulePackDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000B9 /* HookRulePackDefaults.swift */; };
 		CE0A10012D1A4B00000000BC /* HookRegistrySpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000007 /* HookRegistrySpecs.swift */; };
 		CE0A10012D1A4B00000000BE /* HookRulePackEquivalenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000BD /* HookRulePackEquivalenceTests.swift */; };
+		CE0A10012D1A4B00000000C1 /* HookRuleResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000C0 /* HookRuleResolver.swift */; };
+		CE0A10012D1A4B00000000C2 /* HookRuleResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000C0 /* HookRuleResolver.swift */; };
+		CE0A10012D1A4B00000000C4 /* HookRulePackPinning.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000C3 /* HookRulePackPinning.swift */; };
+		CE0A10012D1A4B00000000C6 /* HookRuleResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000C5 /* HookRuleResolverTests.swift */; };
 		6E84A14528D0F94E00BF7495 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA818CBA287ABFD5000BEE9D /* UIKit.framework */; };
 		6E84A15028D0F97500BF7495 /* AKInterface.bundle in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		951D8275299D097C00D35B20 /* Playtools.strings in Resources */ = {isa = PBXBuildFile; fileRef = 951D8277299D097C00D35B20 /* Playtools.strings */; };
@@ -195,6 +199,9 @@
 		CE0A10012D1A4B00000000B6 /* HookRuleAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRuleAdapter.swift; sourceTree = "<group>"; };
 		CE0A10012D1A4B00000000B9 /* HookRulePackDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRulePackDefaults.swift; sourceTree = "<group>"; };
 		CE0A10012D1A4B00000000BD /* HookRulePackEquivalenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRulePackEquivalenceTests.swift; sourceTree = "<group>"; };
+		CE0A10012D1A4B00000000C0 /* HookRuleResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRuleResolver.swift; sourceTree = "<group>"; };
+		CE0A10012D1A4B00000000C3 /* HookRulePackPinning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRulePackPinning.swift; sourceTree = "<group>"; };
+		CE0A10012D1A4B00000000C5 /* HookRuleResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRuleResolverTests.swift; sourceTree = "<group>"; };
 		6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AKInterface.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		951D8276299D097C00D35B20 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Playtools.strings; sourceTree = "<group>"; };
 		951D8278299D098000D35B20 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Playtools.strings"; sourceTree = "<group>"; };
@@ -546,6 +553,7 @@
 				CE0A10012D1A4B0000000093 /* PCChannelClientTests.swift */,
 				CE0A10012D1A4B00000000A6 /* HookRulePackTests.swift */,
 				CE0A10012D1A4B00000000BD /* HookRulePackEquivalenceTests.swift */,
+				CE0A10012D1A4B00000000C5 /* HookRuleResolverTests.swift */,
 			);
 			path = PlayToolsTests;
 			sourceTree = "<group>";
@@ -616,6 +624,8 @@
 				CE0A10012D1A4B00000000B3 /* HookRuleFacts.swift */,
 				CE0A10012D1A4B00000000B6 /* HookRuleAdapter.swift */,
 				CE0A10012D1A4B00000000B9 /* HookRulePackDefaults.swift */,
+				CE0A10012D1A4B00000000C0 /* HookRuleResolver.swift */,
+				CE0A10012D1A4B00000000C3 /* HookRulePackPinning.swift */,
 				B46C02C62C634AB5007637AB /* BatteryLevel.m */,
 				B46C02C82C634C60007637AB /* BatteryLevel.h */,
 				B444BB0B2F49C1D100ADCC5A /* ControllerFocus.m */,
@@ -924,6 +934,8 @@
 				CE0A10012D1A4B00000000B4 /* HookRuleFacts.swift in Sources */,
 				CE0A10012D1A4B00000000B7 /* HookRuleAdapter.swift in Sources */,
 				CE0A10012D1A4B00000000BA /* HookRulePackDefaults.swift in Sources */,
+				CE0A10012D1A4B00000000C1 /* HookRuleResolver.swift in Sources */,
+				CE0A10012D1A4B00000000C4 /* HookRulePackPinning.swift in Sources */,
 				9562D16F2AB50D34002C329D /* ActionDispatcher.swift in Sources */,
 				2847AE48298EFC0F00B0F983 /* PlayScreen.swift in Sources */,
 				9562D1532AB484FD002C329D /* EventAdapter.swift in Sources */,
@@ -1002,6 +1014,8 @@
 				CE0A10012D1A4B00000000BB /* HookRulePackDefaults.swift in Sources */,
 				CE0A10012D1A4B00000000BC /* HookRegistrySpecs.swift in Sources */,
 				CE0A10012D1A4B00000000BE /* HookRulePackEquivalenceTests.swift in Sources */,
+				CE0A10012D1A4B00000000C2 /* HookRuleResolver.swift in Sources */,
+				CE0A10012D1A4B00000000C6 /* HookRuleResolverTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

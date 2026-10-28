@@ -53,8 +53,34 @@ public final class HookRegistry: NSObject {
             settings.setValue(NSNumber(value: Float(height)), forKey: "windowSizeHeight")
         }
 
-        let specs = HookSpecMatrix.allSpecs(facts: facts)
-        install(specs: specs, safeMode: safeMode)
+        // Three-tier resolution (OPTIMIZATION.md 5.1): external verified
+        // pack -> bundled pack -> code matrix.
+        let resolution = HookRuleResolver.specs(facts: facts,
+                                                externalPack: loadExternalPack(),
+                                                bundledPack: HookRulePackDefaults.bundledPack())
+        switch resolution.source {
+        case .external:
+            PCLog.loader.info("hook specs from external rule pack")
+        case .bundled:
+            PCLog.loader.info("hook specs from bundled rule pack")
+        case .codeMatrix:
+            PCLog.loader.info("hook specs from code matrix fallback")
+        }
+        install(specs: resolution.specs, safeMode: safeMode)
+    }
+
+    /// External packs are disabled until a release key is pinned; a pack
+    /// failing verification is rejected here and the caller falls back.
+    private func loadExternalPack() -> HookRulePack? {
+        guard let publicKey = HookRulePackPinning.pinnedPublicKey else { return nil }
+        let identifier = Bundle.main.bundleIdentifier ?? "unknown"
+        let path = HookRulePackPinning.externalPackPath(bundleIdentifier: identifier)
+        guard let data = try? Data(contentsOf: URL(fileURLWithPath: path)) else { return nil }
+        guard let pack = HookRulePackLoader.load(signedData: data, verifyingWith: publicKey) else {
+            PCLog.loader.error("external hook rule pack at \(path) failed verification; using fallback")
+            return nil
+        }
+        return pack
     }
 
     /// kCFStringEncodingMacChineseSimp (0x0628) / MacChineseTrad (0x0629):
