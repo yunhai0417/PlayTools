@@ -119,17 +119,19 @@
 ### 3.2 抽 SwiftPM 契约包
 - **任务**：`PlayToolsContract` package（纯 Foundation Codable），本仓库与 fork 的 PlayCover 共同依赖；`version` 字段配套 decode 兼容规则。
 - **验收**：三份拷贝归一；宿主 fork 切换后装老游戏不崩、新字段缺省合理。
+- **状态**：🟡 暂缓 — decode 兼容规则已在 3.1 落地（全字段 decodeIfPresent + 默认值）。SwiftPM 包抽取与"三份归一"需要宿主 PlayCover fork 仓库协同（第三份拷贝在宿主侧），本仓库内无对象；待宿主 fork 统一时执行。当前单文件三 target 编译已消除仓库内重复。
 
 ---
 
 ## 阶段 4 — UDS 活通道（原 #5，产品力开始）
 
 - **任务**：
-  1. 协议：Unix domain socket + JSON lines，版本握手；指令集 `keymap.update` / `settings.refresh` / `diag.dump` / `log.level`
+  1. ✅ 协议：Unix domain socket + JSON lines，版本握手；指令集 `keymap.update` / `settings.refresh` / `diag.dump` / `log.level`（`PlayTools/Utils/PCChannel.swift`，纯 Foundation，双编译进 PlayToolsTests；`isOK` 字段经 CodingKeys 映射保持线上 JSON 键 `ok`；未知命令/未知字段忽略保证前向兼容。8 个用例：编解码往返、行分帧含半包、前向兼容。）
   2. 运行时侧客户端（PlayTools 内，失败静默降级为现行为）
   3. 宿主侧服务端（fork 的 PlayCover）
   4. 第一个落地功能：键位热更新（不重启游戏改键位）
 - **验收**：宿主改键位 → 游戏内 1s 内生效；通道断开时一切回退现状。
+- **状态**：🟡 4.1 协议编解码已落地（测试 52 绿）；4.2 运行时 UDS 客户端进行中。
 
 ---
 
