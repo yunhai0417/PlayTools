@@ -86,7 +86,7 @@
 ### 2.1 测试 target
 - **任务**：pbxproj 新增 `PlayToolsTests`（iOS 单元测试 bundle，host 不可用则纯逻辑测试）；CI workflow 加 test job。
 - **验收**：`xcodebuild test -scheme PlayTools` 绿。
-- **状态**：✅ 完成（target 部分）— 无 host 的逻辑测试 bundle（`com.apple.product-type.bundle.unit-test`，不设 TEST_HOST）。**关键设计**：被测纯逻辑源文件直接双编译进测试 target，**不链接 PlayTools.framework**——framework 的 `+load`/constructor 会执行 DYLD_INTERPOSE 与 SecItem 挂钩，绝不能进测试 runner 进程。命令：`xcodebuild test -project PlayTools.xcodeproj -scheme PlayTools -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`（共享 scheme 已挂 TestAction）。CI test job 未做（仓库无 CI workflow，待宿主 fork 统一）。
+- **状态**：✅ 完成（target 部分）— 无 host 的逻辑测试 bundle（`com.apple.product-type.bundle.unit-test`，不设 TEST_HOST）。**关键设计**：被测纯逻辑源文件直接双编译进测试 target，**不链接 PlayTools.framework**——framework 的 `+load`/constructor 会执行 DYLD_INTERPOSE 与 SecItem 挂钩，绝不能进测试 runner 进程。命令：`xcodebuild test -project PlayTools.xcodeproj -scheme PlayTools -destination 'platform=iOS Simulator,name=iPhone 17 Pro'`（共享 scheme 已挂 TestAction）。✅ CI test job 已补（`.github/workflows/Tests.yml`，macos-latest + 动态选取 runner 上首个 iPhone 模拟器，避免镜像间模拟器名漂移；SwiftLint job 保持不动）。
 
 ### 2.2 几何变换纯函数化 + 用例
 - **任务**：`PlayScreen.swift` 的 `toAspectRatio*` 家族改为 `ScreenGeometry` 结构（宽高/旋转/scaler 参数注入，消除全局 `let` 依赖）；覆盖 16:9/4:3/自定义/inverse/旋转矩阵用例。
