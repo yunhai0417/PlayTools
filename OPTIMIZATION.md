@@ -153,8 +153,8 @@
   - `HookFactsInput`（启动期环境快照，纯结构）+ `HookRuleFacts.dict`（事实命名协议）；`allSpecs` 重构为纯函数（`HookSpecMatrix.allSpecs(facts:)`，F 组条件改为捕获 bool，PlayInfo/PlaySettings 读取移到 run()）；`HookSpecModel.swift` 拆出纯模型使 spec 矩阵可双编译。
   - `HookRulePackDefaults.bundledJSON`：37 条规则逐条镜像代码矩阵；`HookRuleAdapter` 把激活规则映射回 HookSpec（条件已在事实快照求值）。
   - **等价测试**（防漂移）：32 个显示矩阵组合 ×2 个条件修复组合，断言 pack 路径与代码路径产出**完全相同**的安装集（id/selector/replacement/candidates/policy 全序比较）。全套 81 绿。
-  - 待做：安装路径切换（外部签名包 → 内置包 → 代码矩阵三级兜底）+ 外部包路径约定 + 私钥/公钥管理。
-  - ✅ **安装路径已切换**：`HookRuleResolver`（纯函数三级解析）+ `HookRuleRegistry.run()` 改为「外部签名包（`~/Library/Containers/io.playcover.PlayCover/Rule Packs/<bundleID>.json`，Ed25519 验签，失败即弃）→ 内置包 → 代码矩阵兜底」，每级来源写入日志。`HookRulePackPinning.pinnedPublicKey` 暂为 nil——发布前生成密钥对并钉入公钥前，外部包通道整体禁用（fail-safe）。解析器 4 用例（外部优先/内置次之/双缺走代码/内置与代码安装集一致），全套 85 绿。**5.1 运行时侧完成**；剩余：发布密钥管理 + 宿主侧打包/下发工具 + 远程通道。
+  - 待做：安装路径切换（外部签名包 → 内置包 → 代码矩阵三级兜底）+ 外部包路径约定 + 私钥/公钥管理（✅ 签名工具已就绪：`Spike/RulePackSigner/main.swift`，swiftc 独立编译的 `genkeys`/`sign`/`verify` CLI，信封与 `HookRulePackLoader` 逐字节同构——签名覆盖 pack 原始字节不重编码；篡改 payload 验证拒绝、缺钥 EX_CONFIG、坏命令 EX_USAGE 均实测）。
+  - ✅ **安装路径已切换**：`HookRuleResolver`（纯函数三级解析）+ `HookRuleRegistry.run()` 改为「外部签名包（`~/Library/Containers/io.playcover.PlayCover/Rule Packs/<bundleID>.json`，Ed25519 验签，失败即弃）→ 内置包 → 代码矩阵兜底」，每级来源写入日志。`HookRulePackPinning.pinnedPublicKey` 暂为 nil——发布前生成密钥对并钉入公钥前，外部包通道整体禁用（fail-safe）。解析器 4 用例（外部优先/内置次之/双缺走代码/内置与代码安装集一致），全套 85 绿。**5.1 运行时侧完成**；剩余：发布密钥对生成并钉入公钥（工具已备，`Spike/RulePackSigner`）+ 宿主侧下发链路 + 远程通道。
 
 ---
 
