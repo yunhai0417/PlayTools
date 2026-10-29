@@ -1,0 +1,39 @@
+name: Tests
+
+on:
+  # Run on PR and push to every branch (mirrors SwiftLint.yml)
+  pull_request:
+  push:
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  Tests:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4.1.0
+
+      # Simulator names drift between runner images; pick the first
+      # available iPhone instead of pinning one. The test bundle hosts no
+      # UI, so any iPhone simulator works.
+      - name: Select iPhone simulator
+        id: simulator
+        run: |
+          NAME=$(xcodebuild -showdestinations \
+            -project PlayTools.xcodeproj -scheme PlayTools 2>/dev/null \
+            | grep -oE 'name:iPhone [^,}]+' | head -n 1 | cut -d: -f2- | xargs)
+          if [ -z "$NAME" ]; then
+            echo "::error::No iPhone simulator available on this runner"
+            exit 1
+          fi
+          echo "Using simulator: $NAME"
+          echo "name=$NAME" >> "$GITHUB_OUTPUT"
+
+      - name: Run unit tests
+        run: |
+          xcodebuild test \
+            -project PlayTools.xcodeproj \
+            -scheme PlayTools \
+            -destination "platform=iOS Simulator,name=${{ steps.simulator.outputs.name }}" \
+            CODE_SIGNING_ALLOWED=NO
