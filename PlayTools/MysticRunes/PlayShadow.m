@@ -176,10 +176,6 @@ __attribute__((visibility("hidden")))
 @implementation PlayShadowLoader
 
 + (void) load {
-    if ([[PlaySettings shared] safeMode]) {
-        [[PCLog bypass] info:@"safeMode ON: bypass hooks skipped"];
-        return;
-    }
     [self debugLogger:@"PlayShadow is now loading"];
     // Gate this behind an environment variable
     if ([[NSProcessInfo processInfo].environment[@"USE_EXTRA_ANTIJB"] isEqualToString:@"1"]) {
@@ -351,7 +347,7 @@ __attribute__((visibility("hidden")))
 }
 
 + (void) debugLogger: (NSString *) message {
-    [[PCLog bypass] info:message];
+    NSLog(@"PC-DEBUG: %@", message);
 }
 
 @end

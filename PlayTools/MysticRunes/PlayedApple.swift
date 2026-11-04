@@ -14,13 +14,11 @@ import Security
 
 public class PlayKeychain: NSObject {
     static let shared = PlayKeychain()
-    // Injected database: production always uses the shared PlayChain DB,
-    // tests swap in an isolated temp-directory instance.
-    static var playChainDB: PlayKeychainDB = .shared
+    private static let playChainDB = PlayKeychainDB.shared
 
     @objc public static func debugLogger(_ logContent: String) {
         if PlaySettings.shared.settingsData.playChainDebugging {
-            PCLog.keychain.info(logContent)
+            NSLog("PC-DEBUG: \(logContent)")
         }
     }
 

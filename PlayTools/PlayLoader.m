@@ -111,14 +111,9 @@ DYLD_INTERPOSE(pt_sysctl, sysctl)
 // This allows us to intercept keychain requests and return our own data
 
 // Use the implementations from PlayKeychain
-// PlayChain interception requires the feature enabled AND safe mode off
-static BOOL pt_playchain_enabled(void) {
-    return [[PlaySettings shared] playChain] && ![[PlaySettings shared] safeMode];
-}
-
 static OSStatus pt_SecItemCopyMatching(CFDictionaryRef query, CFTypeRef *result) {
     OSStatus retval;
-    if (pt_playchain_enabled()) {
+    if ([[PlaySettings shared] playChain]) {
         retval = [PlayKeychain copyMatching:(__bridge NSDictionary * _Nonnull)(query) result:result];
     } else {
         retval = SecItemCopyMatching(query, result);
@@ -134,7 +129,7 @@ static OSStatus pt_SecItemCopyMatching(CFDictionaryRef query, CFTypeRef *result)
 
 static OSStatus pt_SecItemAdd(CFDictionaryRef attributes, CFTypeRef *result) {
     OSStatus retval;
-    if (pt_playchain_enabled()) {
+    if ([[PlaySettings shared] playChain]) {
         retval = [PlayKeychain add:(__bridge NSDictionary * _Nonnull)(attributes) result:result];
     } else {
         retval = SecItemAdd(attributes, result);
@@ -150,7 +145,7 @@ static OSStatus pt_SecItemAdd(CFDictionaryRef attributes, CFTypeRef *result) {
 
 static OSStatus pt_SecItemUpdate(CFDictionaryRef query, CFDictionaryRef attributesToUpdate) {
     OSStatus retval;
-    if (pt_playchain_enabled()) {
+    if ([[PlaySettings shared] playChain]) {
         retval = [PlayKeychain update:(__bridge NSDictionary * _Nonnull)(query) attributesToUpdate:(__bridge NSDictionary * _Nonnull)(attributesToUpdate)];
     } else {
         retval = SecItemUpdate(query, attributesToUpdate);
@@ -167,7 +162,7 @@ static OSStatus pt_SecItemUpdate(CFDictionaryRef query, CFDictionaryRef attribut
 
 static OSStatus pt_SecItemDelete(CFDictionaryRef query) {
     OSStatus retval;
-    if (pt_playchain_enabled()) {
+    if ([[PlaySettings shared] playChain]) {
         retval = [PlayKeychain delete:(__bridge NSDictionary * _Nonnull)(query)];
     } else {
         retval = SecItemDelete(query);
@@ -180,7 +175,7 @@ static OSStatus pt_SecItemDelete(CFDictionaryRef query) {
 
 static SecKeyRef pt_SecKeyCreateRandomKey(CFDictionaryRef parameters, CFErrorRef *error) {
     SecKeyRef result;
-    if (pt_playchain_enabled()) {
+    if ([[PlaySettings shared] playChain]) {
         result = [PlayKeychain keyCreateRandomKey:(__bridge NSDictionary * _Nonnull)(parameters) error:error];
     } else {
         result = SecKeyCreateRandomKey(parameters, (void *)error);
@@ -197,7 +192,7 @@ static SecKeyRef pt_SecKeyCreateRandomKey(CFDictionaryRef parameters, CFErrorRef
 // Deprecated, but some apps might still use it.
 static OSStatus pt_SecKeyGeneratePair(CFDictionaryRef parameters, SecKeyRef *publicKey, SecKeyRef *privateKey) {
     OSStatus retval;
-    if (pt_playchain_enabled()) {
+    if ([[PlaySettings shared] playChain]) {
         retval = [PlayKeychain keyGeneratePair:(__bridge NSDictionary * _Nonnull)(parameters) publicKey:(void *)publicKey privateKey:(void *)privateKey];
     } else {
         retval = SecKeyGeneratePair(parameters, (void *)publicKey, (void *)privateKey);
@@ -283,7 +278,7 @@ static int pt_usleep(useconds_t time) {
         [thread_sleep_lock lock];
     });
     
-    if ([[PlaySettings shared] blockSleepSpamming] && ![[PlaySettings shared] safeMode]) {
+    if ([[PlaySettings shared] blockSleepSpamming]) {
         int thread_id = pthread_mach_thread_np(pthread_self());
         NSNumber *threadKey = @(thread_id);
 
@@ -310,8 +305,9 @@ static int pt_usleep(useconds_t time) {
 
         if (exceeded_sleep_limit) {
             // Stop this thread from spamming usleep calls
-            [[PCLog loader] info:[NSString stringWithFormat:
-                                  @"Thread %i exceeded usleep limit, suspending", thread_id]];
+            NSLog(@"[PC] Thread %i exceeded usleep limit. Seem sus, stopping this "
+                  @"thread FOREVER",
+                  thread_id);
             
             [thread_sleep_lock lock];
             [thread_sleep_lock unlock];
@@ -333,49 +329,17 @@ DYLD_INTERPOSE(pt_usleep, usleep)
 
 @implementation PlayLoader
 
-// Record the static dyld interpose table for diagnostics visibility
-static void PTRecordInterposes(void) {
-    NSArray<NSArray<NSString *> *> *interposes = @[
-        @[@"dyld_get_active_platform", @"pt_dyld_get_active_platform"],
-        @[@"uname", @"pt_uname"],
-        @[@"sysctl", @"pt_sysctl"],
-        @[@"sysctlbyname", @"pt_sysctlbyname"],
-        @[@"SecItemCopyMatching", @"pt_SecItemCopyMatching"],
-        @[@"SecItemAdd", @"pt_SecItemAdd"],
-        @[@"SecItemUpdate", @"pt_SecItemUpdate"],
-        @[@"SecItemDelete", @"pt_SecItemDelete"],
-        @[@"SecKeyCreateRandomKey", @"pt_SecKeyCreateRandomKey"],
-        @[@"SecKeyGeneratePair", @"pt_SecKeyGeneratePair"],
-        @[@"open", @"pt_open"],
-        @[@"stat", @"pt_stat"],
-        @[@"access", @"pt_access"],
-        @[@"rename", @"pt_rename"],
-        @[@"unlink", @"pt_unlink"],
-        @[@"usleep", @"pt_usleep"]
-    ];
-    for (NSArray<NSString *> *pair in interposes) {
-        [[HookStatusRegistry shared] recordTarget:@"interpose"
-                                         selector:pair[0]
-                                      replacement:pair[1]
-                                           result:@"applied"
-                                           detail:nil];
-    }
-}
-
 static void __attribute__((constructor)) initialize(void) {
-    PTRecordInterposes();
-    [HookDiagnostics installCrashHandlers];
     [PlayCover launch];
-
-    // UE path fixing is an optional workaround: disabled in safe mode
-    if (ue_status == 0 && ![[PlaySettings shared] safeMode]) {
+    
+    if (ue_status == 0) {
         if (PlayInfo.isUnrealEngine) {
             ue_status = 2;
         }
     }
     
     if (ue_status == 2) {
-        [[PCLog loader] info:@"UnrealEngine Hooked"];
+        [PlayKeychain debugLogger: [NSString stringWithFormat:@"UnrealEngine Hooked"]];
     }
 
     if ([[PlaySettings shared] blockSleepSpamming]) {

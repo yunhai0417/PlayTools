@@ -24,7 +24,7 @@ class PlayInput {
             simulateGCMouseDisconnect()
         }
 
-        if !PlaySettings.shared.keymapping || PlaySettings.shared.safeMode {
+        if !PlaySettings.shared.keymapping {
             return
         }
 

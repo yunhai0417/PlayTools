@@ -13,63 +13,6 @@
 		6E7663A128D0FB5300DE4AF9 /* AKPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7663A028D0FB5300DE4AF9 /* AKPlugin.swift */; };
 		6E7663A528D0FEBE00DE4AF9 /* AKPluginLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E7663A428D0FEBE00DE4AF9 /* AKPluginLoader.swift */; };
 		955A3F48AFD07B6583BFEFC3 /* UserPluginLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F0487A0C752EE4930AF0AB /* UserPluginLoader.swift */; };
-		CE0A10012D1A4B0000000002 /* PCLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000001 /* PCLog.swift */; };
-		CE0A10012D1A4B0000000004 /* HookDiagnostics.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000003 /* HookDiagnostics.swift */; };
-		CE0A10012D1A4B0000000006 /* HookRegistry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000005 /* HookRegistry.swift */; };
-		CE0A10012D1A4B0000000008 /* HookRegistrySpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000007 /* HookRegistrySpecs.swift */; };
-		CE0A10012D1A4B0000000011 /* PlayToolsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000012 /* PlayToolsTests.swift */; };
-		CE0A10012D1A4B0000000021 /* ScreenGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000020 /* ScreenGeometry.swift */; };
-		CE0A10012D1A4B0000000022 /* ScreenGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000020 /* ScreenGeometry.swift */; };
-		CE0A10012D1A4B0000000024 /* ScreenGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000023 /* ScreenGeometryTests.swift */; };
-		CE0A10012D1A4B0000000031 /* KeymapCoordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000030 /* KeymapCoordinates.swift */; };
-		CE0A10012D1A4B0000000032 /* KeymapCoordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000030 /* KeymapCoordinates.swift */; };
-		CE0A10012D1A4B0000000034 /* KeymapCoordinatesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000033 /* KeymapCoordinatesTests.swift */; };
-		CE0A10012D1A4B0000000041 /* PlayKeychainTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000040 /* PlayKeychainTests.swift */; };
-		CE0A10012D1A4B0000000042 /* PlayedApple.swift in Sources */ = {isa = PBXBuildFile; fileRef = ABCECEE529750BA600746595 /* PlayedApple.swift */; };
-		CE0A10012D1A4B0000000043 /* PlayedAppleDB.swift in Sources */ = {isa = PBXBuildFile; fileRef = EEB248582B81D074000C230A /* PlayedAppleDB.swift */; };
-		CE0A10012D1A4B0000000044 /* PlayedAppleDBConstants.swift in Sources */ = {isa = PBXBuildFile; fileRef = B66E64FF2C936E9800E48FD0 /* PlayedAppleDBConstants.swift */; };
-		CE0A10012D1A4B0000000045 /* PlaySettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA719704287A44D200623C15 /* PlaySettings.swift */; };
-		CE0A10012D1A4B0000000046 /* PCLog.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000001 /* PCLog.swift */; };
-		CE0A10012D1A4B0000000047 /* DiscordActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1271728288284BE0025112B /* DiscordActivity.swift */; };
-		CE0A10012D1A4B0000000051 /* TouchSink.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000050 /* TouchSink.swift */; };
-		CE0A10012D1A4B0000000052 /* TouchSink.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000050 /* TouchSink.swift */; };
-		CE0A10012D1A4B0000000054 /* TouchSinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000053 /* TouchSinkTests.swift */; };
-		CE0A10012D1A4B0000000061 /* PlayToolsContracts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000060 /* PlayToolsContracts.swift */; };
-		CE0A10012D1A4B0000000062 /* PlayToolsContracts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000060 /* PlayToolsContracts.swift */; };
-		CE0A10012D1A4B0000000063 /* PlayToolsContracts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000060 /* PlayToolsContracts.swift */; };
-		CE0A10012D1A4B0000000064 /* DiscordActivity.swift in Sources */ = {isa = PBXBuildFile; fileRef = B1271728288284BE0025112B /* DiscordActivity.swift */; };
-		CE0A10012D1A4B0000000066 /* PlayToolsContractsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000065 /* PlayToolsContractsTests.swift */; };
-		CE0A10012D1A4B0000000071 /* PCChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000070 /* PCChannel.swift */; };
-		CE0A10012D1A4B0000000072 /* PCChannel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000070 /* PCChannel.swift */; };
-		CE0A10012D1A4B0000000074 /* PCChannelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000073 /* PCChannelTests.swift */; };
-		CE0A10012D1A4B0000000081 /* PCChannelSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000080 /* PCChannelSession.swift */; };
-		CE0A10012D1A4B0000000082 /* PCChannelSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000080 /* PCChannelSession.swift */; };
-		CE0A10012D1A4B0000000084 /* PCChannelTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000083 /* PCChannelTransport.swift */; };
-		CE0A10012D1A4B0000000085 /* PCChannelTransport.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000083 /* PCChannelTransport.swift */; };
-		CE0A10012D1A4B0000000087 /* PCChannelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000086 /* PCChannelClient.swift */; };
-		CE0A10012D1A4B0000000089 /* PCChannelSessionTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000088 /* PCChannelSessionTests.swift */; };
-		CE0A10012D1A4B0000000091 /* PCChannelTransportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000090 /* PCChannelTransportTests.swift */; };
-		CE0A10012D1A4B0000000092 /* PCChannelClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000086 /* PCChannelClient.swift */; };
-		CE0A10012D1A4B0000000094 /* PCChannelClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000093 /* PCChannelClientTests.swift */; };
-		CE0A10012D1A4B00000000A1 /* HookRulePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000A0 /* HookRulePack.swift */; };
-		CE0A10012D1A4B00000000A2 /* HookRulePack.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000A0 /* HookRulePack.swift */; };
-		CE0A10012D1A4B00000000A4 /* HookRulePackLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000A3 /* HookRulePackLoader.swift */; };
-		CE0A10012D1A4B00000000A5 /* HookRulePackLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000A3 /* HookRulePackLoader.swift */; };
-		CE0A10012D1A4B00000000A7 /* HookRulePackTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000A6 /* HookRulePackTests.swift */; };
-		CE0A10012D1A4B00000000B1 /* HookSpecModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000B0 /* HookSpecModel.swift */; };
-		CE0A10012D1A4B00000000B2 /* HookSpecModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000B0 /* HookSpecModel.swift */; };
-		CE0A10012D1A4B00000000B4 /* HookRuleFacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000B3 /* HookRuleFacts.swift */; };
-		CE0A10012D1A4B00000000B5 /* HookRuleFacts.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000B3 /* HookRuleFacts.swift */; };
-		CE0A10012D1A4B00000000B7 /* HookRuleAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000B6 /* HookRuleAdapter.swift */; };
-		CE0A10012D1A4B00000000B8 /* HookRuleAdapter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000B6 /* HookRuleAdapter.swift */; };
-		CE0A10012D1A4B00000000BA /* HookRulePackDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000B9 /* HookRulePackDefaults.swift */; };
-		CE0A10012D1A4B00000000BB /* HookRulePackDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000B9 /* HookRulePackDefaults.swift */; };
-		CE0A10012D1A4B00000000BC /* HookRegistrySpecs.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B0000000007 /* HookRegistrySpecs.swift */; };
-		CE0A10012D1A4B00000000BE /* HookRulePackEquivalenceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000BD /* HookRulePackEquivalenceTests.swift */; };
-		CE0A10012D1A4B00000000C1 /* HookRuleResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000C0 /* HookRuleResolver.swift */; };
-		CE0A10012D1A4B00000000C2 /* HookRuleResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000C0 /* HookRuleResolver.swift */; };
-		CE0A10012D1A4B00000000C4 /* HookRulePackPinning.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000C3 /* HookRulePackPinning.swift */; };
-		CE0A10012D1A4B00000000C6 /* HookRuleResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0A10012D1A4B00000000C5 /* HookRuleResolverTests.swift */; };
 		6E84A14528D0F94E00BF7495 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = AA818CBA287ABFD5000BEE9D /* UIKit.framework */; };
 		6E84A15028D0F97500BF7495 /* AKInterface.bundle in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		951D8275299D097C00D35B20 /* Playtools.strings in Resources */ = {isa = PBXBuildFile; fileRef = 951D8277299D097C00D35B20 /* Playtools.strings */; };
@@ -168,40 +111,6 @@
 		6E7663A028D0FB5300DE4AF9 /* AKPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AKPlugin.swift; sourceTree = "<group>"; };
 		6E7663A428D0FEBE00DE4AF9 /* AKPluginLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AKPluginLoader.swift; sourceTree = "<group>"; };
 		65F0487A0C752EE4930AF0AB /* UserPluginLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPluginLoader.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000001 /* PCLog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCLog.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000003 /* HookDiagnostics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookDiagnostics.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000005 /* HookRegistry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRegistry.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000007 /* HookRegistrySpecs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRegistrySpecs.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000010 /* PlayToolsTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = PlayToolsTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		CE0A10012D1A4B0000000012 /* PlayToolsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayToolsTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000020 /* ScreenGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenGeometry.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000023 /* ScreenGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenGeometryTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000030 /* KeymapCoordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeymapCoordinates.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000033 /* KeymapCoordinatesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeymapCoordinatesTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000040 /* PlayKeychainTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayKeychainTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000050 /* TouchSink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchSink.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000053 /* TouchSinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TouchSinkTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000060 /* PlayToolsContracts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayToolsContracts.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000065 /* PlayToolsContractsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlayToolsContractsTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000070 /* PCChannel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannel.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000073 /* PCChannelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000080 /* PCChannelSession.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelSession.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000083 /* PCChannelTransport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelTransport.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000086 /* PCChannelClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelClient.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000088 /* PCChannelSessionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelSessionTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000090 /* PCChannelTransportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelTransportTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B0000000093 /* PCChannelClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PCChannelClientTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000A0 /* HookRulePack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRulePack.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000A3 /* HookRulePackLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRulePackLoader.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000A6 /* HookRulePackTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRulePackTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000B0 /* HookSpecModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookSpecModel.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000B3 /* HookRuleFacts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRuleFacts.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000B6 /* HookRuleAdapter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRuleAdapter.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000B9 /* HookRulePackDefaults.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRulePackDefaults.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000BD /* HookRulePackEquivalenceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRulePackEquivalenceTests.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000C0 /* HookRuleResolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRuleResolver.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000C3 /* HookRulePackPinning.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRulePackPinning.swift; sourceTree = "<group>"; };
-		CE0A10012D1A4B00000000C5 /* HookRuleResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HookRuleResolverTests.swift; sourceTree = "<group>"; };
 		6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AKInterface.bundle; sourceTree = BUILT_PRODUCTS_DIR; };
 		951D8276299D097C00D35B20 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Playtools.strings; sourceTree = "<group>"; };
 		951D8278299D098000D35B20 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Playtools.strings"; sourceTree = "<group>"; };
@@ -302,13 +211,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		CE0A10012D1A4B0000000015 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
@@ -317,7 +219,6 @@
 			children = (
 				6E76639A28D0FAE700DE4AF9 /* Plugin.swift */,
 				6E7663A028D0FB5300DE4AF9 /* AKPlugin.swift */,
-				CE0A10012D1A4B0000000060 /* PlayToolsContracts.swift */,
 				6E76639628D0FA6200DE4AF9 /* AKInterface-Bridging-Header.h */,
 			);
 			name = AKInterface;
@@ -494,7 +395,6 @@
 				9555ED2D2C058DE3006E469C /* DebugOverlay */,
 				9562D17A2AB6E5ED002C329D /* Action */,
 				AA719724287A480C00623C15 /* Toucher.swift */,
-				CE0A10012D1A4B0000000050 /* TouchSink.swift */,
 			);
 			path = Backend;
 			sourceTree = "<group>";
@@ -522,7 +422,6 @@
 				951D8277299D097C00D35B20 /* Playtools.strings */,
 				AA7196DA287A447700623C15 /* PlayTools */,
 				6E76639928D0FA6F00DE4AF9 /* AKInterface */,
-				CE0A10012D1A4B0000000013 /* PlayToolsTests */,
 				AA7196D9287A447700623C15 /* Products */,
 				AA818CB7287ABFB1000BEE9D /* Frameworks */,
 			);
@@ -533,29 +432,8 @@
 			children = (
 				AA7196D8287A447700623C15 /* PlayTools.framework */,
 				6E84A14C28D0F96D00BF7495 /* AKInterface.bundle */,
-				CE0A10012D1A4B0000000010 /* PlayToolsTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		CE0A10012D1A4B0000000013 /* PlayToolsTests */ = {
-			isa = PBXGroup;
-			children = (
-				CE0A10012D1A4B0000000012 /* PlayToolsTests.swift */,
-				CE0A10012D1A4B0000000023 /* ScreenGeometryTests.swift */,
-				CE0A10012D1A4B0000000033 /* KeymapCoordinatesTests.swift */,
-				CE0A10012D1A4B0000000040 /* PlayKeychainTests.swift */,
-				CE0A10012D1A4B0000000053 /* TouchSinkTests.swift */,
-				CE0A10012D1A4B0000000065 /* PlayToolsContractsTests.swift */,
-				CE0A10012D1A4B0000000073 /* PCChannelTests.swift */,
-				CE0A10012D1A4B0000000088 /* PCChannelSessionTests.swift */,
-				CE0A10012D1A4B0000000090 /* PCChannelTransportTests.swift */,
-				CE0A10012D1A4B0000000093 /* PCChannelClientTests.swift */,
-				CE0A10012D1A4B00000000A6 /* HookRulePackTests.swift */,
-				CE0A10012D1A4B00000000BD /* HookRulePackEquivalenceTests.swift */,
-				CE0A10012D1A4B00000000C5 /* HookRuleResolverTests.swift */,
-			);
-			path = PlayToolsTests;
 			sourceTree = "<group>";
 		};
 		AA7196DA287A447700623C15 /* PlayTools */ = {
@@ -608,24 +486,6 @@
 				AA719798287A481500623C15 /* Toast.swift */,
 				6E7663A428D0FEBE00DE4AF9 /* AKPluginLoader.swift */,
 				65F0487A0C752EE4930AF0AB /* UserPluginLoader.swift */,
-				CE0A10012D1A4B0000000001 /* PCLog.swift */,
-				CE0A10012D1A4B0000000003 /* HookDiagnostics.swift */,
-				CE0A10012D1A4B0000000005 /* HookRegistry.swift */,
-				CE0A10012D1A4B0000000007 /* HookRegistrySpecs.swift */,
-				CE0A10012D1A4B0000000020 /* ScreenGeometry.swift */,
-				CE0A10012D1A4B0000000030 /* KeymapCoordinates.swift */,
-				CE0A10012D1A4B0000000070 /* PCChannel.swift */,
-				CE0A10012D1A4B0000000080 /* PCChannelSession.swift */,
-				CE0A10012D1A4B0000000083 /* PCChannelTransport.swift */,
-				CE0A10012D1A4B0000000086 /* PCChannelClient.swift */,
-				CE0A10012D1A4B00000000A0 /* HookRulePack.swift */,
-				CE0A10012D1A4B00000000A3 /* HookRulePackLoader.swift */,
-				CE0A10012D1A4B00000000B0 /* HookSpecModel.swift */,
-				CE0A10012D1A4B00000000B3 /* HookRuleFacts.swift */,
-				CE0A10012D1A4B00000000B6 /* HookRuleAdapter.swift */,
-				CE0A10012D1A4B00000000B9 /* HookRulePackDefaults.swift */,
-				CE0A10012D1A4B00000000C0 /* HookRuleResolver.swift */,
-				CE0A10012D1A4B00000000C3 /* HookRulePackPinning.swift */,
 				B46C02C62C634AB5007637AB /* BatteryLevel.m */,
 				B46C02C82C634C60007637AB /* BatteryLevel.h */,
 				B444BB0B2F49C1D100ADCC5A /* ControllerFocus.m */,
@@ -763,23 +623,6 @@
 			productReference = AA7196D8287A447700623C15 /* PlayTools.framework */;
 			productType = "com.apple.product-type.framework";
 		};
-		CE0A10012D1A4B0000000017 /* PlayToolsTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = CE0A10012D1A4B000000001A /* Build configuration list for PBXNativeTarget "PlayToolsTests" */;
-			buildPhases = (
-				CE0A10012D1A4B0000000014 /* Sources */,
-				CE0A10012D1A4B0000000015 /* Frameworks */,
-				CE0A10012D1A4B0000000016 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-			);
-			name = PlayToolsTests;
-			productName = PlayToolsTests;
-			productReference = CE0A10012D1A4B0000000010 /* PlayToolsTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -796,10 +639,6 @@
 					AA7196D7287A447700623C15 = {
 						CreatedOnToolsVersion = 13.4.1;
 						LastSwiftMigration = 1340;
-					};
-					CE0A10012D1A4B0000000017 = {
-						CreatedOnToolsVersion = 14.0;
-						TestTargetID = AA7196D7287A447700623C15;
 					};
 				};
 			};
@@ -822,7 +661,6 @@
 			targets = (
 				AA7196D7287A447700623C15 /* PlayTools */,
 				6E84A14B28D0F96D00BF7495 /* AKInterface */,
-				CE0A10012D1A4B0000000017 /* PlayToolsTests */,
 			);
 		};
 /* End PBXProject section */
@@ -840,13 +678,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				951D8275299D097C00D35B20 /* Playtools.strings in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE0A10012D1A4B0000000016 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -880,8 +711,6 @@
 			files = (
 				6E7663A128D0FB5300DE4AF9 /* AKPlugin.swift in Sources */,
 				6E76639C28D0FAE700DE4AF9 /* Plugin.swift in Sources */,
-				CE0A10012D1A4B0000000062 /* PlayToolsContracts.swift in Sources */,
-				CE0A10012D1A4B0000000064 /* DiscordActivity.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -916,26 +745,6 @@
 				954389C82B392D5300B063BB /* Button.swift in Sources */,
 				6E7663A528D0FEBE00DE4AF9 /* AKPluginLoader.swift in Sources */,
 				955A3F48AFD07B6583BFEFC3 /* UserPluginLoader.swift in Sources */,
-				CE0A10012D1A4B0000000002 /* PCLog.swift in Sources */,
-				CE0A10012D1A4B0000000004 /* HookDiagnostics.swift in Sources */,
-				CE0A10012D1A4B0000000006 /* HookRegistry.swift in Sources */,
-				CE0A10012D1A4B0000000008 /* HookRegistrySpecs.swift in Sources */,
-				CE0A10012D1A4B0000000021 /* ScreenGeometry.swift in Sources */,
-				CE0A10012D1A4B0000000031 /* KeymapCoordinates.swift in Sources */,
-				CE0A10012D1A4B0000000051 /* TouchSink.swift in Sources */,
-				CE0A10012D1A4B0000000061 /* PlayToolsContracts.swift in Sources */,
-				CE0A10012D1A4B0000000071 /* PCChannel.swift in Sources */,
-				CE0A10012D1A4B0000000081 /* PCChannelSession.swift in Sources */,
-				CE0A10012D1A4B0000000084 /* PCChannelTransport.swift in Sources */,
-				CE0A10012D1A4B0000000087 /* PCChannelClient.swift in Sources */,
-				CE0A10012D1A4B00000000A1 /* HookRulePack.swift in Sources */,
-				CE0A10012D1A4B00000000A4 /* HookRulePackLoader.swift in Sources */,
-				CE0A10012D1A4B00000000B1 /* HookSpecModel.swift in Sources */,
-				CE0A10012D1A4B00000000B4 /* HookRuleFacts.swift in Sources */,
-				CE0A10012D1A4B00000000B7 /* HookRuleAdapter.swift in Sources */,
-				CE0A10012D1A4B00000000BA /* HookRulePackDefaults.swift in Sources */,
-				CE0A10012D1A4B00000000C1 /* HookRuleResolver.swift in Sources */,
-				CE0A10012D1A4B00000000C4 /* HookRulePackPinning.swift in Sources */,
 				9562D16F2AB50D34002C329D /* ActionDispatcher.swift in Sources */,
 				2847AE48298EFC0F00B0F983 /* PlayScreen.swift in Sources */,
 				9562D1532AB484FD002C329D /* EventAdapter.swift in Sources */,
@@ -974,48 +783,6 @@
 				B1E8CF8A28BBE2AB004340D3 /* Keymapping.swift in Sources */,
 				AB7DA47529B85BFB0034ACB2 /* PlayShadow.m in Sources */,
 				9562D1662AB5049B002C329D /* KeyboardEventAdapter.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		CE0A10012D1A4B0000000014 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				CE0A10012D1A4B0000000011 /* PlayToolsTests.swift in Sources */,
-				CE0A10012D1A4B0000000022 /* ScreenGeometry.swift in Sources */,
-				CE0A10012D1A4B0000000024 /* ScreenGeometryTests.swift in Sources */,
-				CE0A10012D1A4B0000000032 /* KeymapCoordinates.swift in Sources */,
-				CE0A10012D1A4B0000000034 /* KeymapCoordinatesTests.swift in Sources */,
-				CE0A10012D1A4B0000000041 /* PlayKeychainTests.swift in Sources */,
-				CE0A10012D1A4B0000000042 /* PlayedApple.swift in Sources */,
-				CE0A10012D1A4B0000000043 /* PlayedAppleDB.swift in Sources */,
-				CE0A10012D1A4B0000000044 /* PlayedAppleDBConstants.swift in Sources */,
-				CE0A10012D1A4B0000000045 /* PlaySettings.swift in Sources */,
-				CE0A10012D1A4B0000000046 /* PCLog.swift in Sources */,
-				CE0A10012D1A4B0000000047 /* DiscordActivity.swift in Sources */,
-				CE0A10012D1A4B0000000052 /* TouchSink.swift in Sources */,
-				CE0A10012D1A4B0000000054 /* TouchSinkTests.swift in Sources */,
-				CE0A10012D1A4B0000000063 /* PlayToolsContracts.swift in Sources */,
-				CE0A10012D1A4B0000000066 /* PlayToolsContractsTests.swift in Sources */,
-				CE0A10012D1A4B0000000072 /* PCChannel.swift in Sources */,
-				CE0A10012D1A4B0000000082 /* PCChannelSession.swift in Sources */,
-				CE0A10012D1A4B0000000085 /* PCChannelTransport.swift in Sources */,
-				CE0A10012D1A4B0000000074 /* PCChannelTests.swift in Sources */,
-				CE0A10012D1A4B0000000089 /* PCChannelSessionTests.swift in Sources */,
-				CE0A10012D1A4B0000000091 /* PCChannelTransportTests.swift in Sources */,
-				CE0A10012D1A4B0000000092 /* PCChannelClient.swift in Sources */,
-				CE0A10012D1A4B0000000094 /* PCChannelClientTests.swift in Sources */,
-				CE0A10012D1A4B00000000A2 /* HookRulePack.swift in Sources */,
-				CE0A10012D1A4B00000000A5 /* HookRulePackLoader.swift in Sources */,
-				CE0A10012D1A4B00000000A7 /* HookRulePackTests.swift in Sources */,
-				CE0A10012D1A4B00000000B2 /* HookSpecModel.swift in Sources */,
-				CE0A10012D1A4B00000000B5 /* HookRuleFacts.swift in Sources */,
-				CE0A10012D1A4B00000000B8 /* HookRuleAdapter.swift in Sources */,
-				CE0A10012D1A4B00000000BB /* HookRulePackDefaults.swift in Sources */,
-				CE0A10012D1A4B00000000BC /* HookRegistrySpecs.swift in Sources */,
-				CE0A10012D1A4B00000000BE /* HookRulePackEquivalenceTests.swift in Sources */,
-				CE0A10012D1A4B00000000C2 /* HookRuleResolver.swift in Sources */,
-				CE0A10012D1A4B00000000C6 /* HookRuleResolverTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1311,56 +1078,6 @@
 			};
 			name = Release;
 		};
-		CE0A10012D1A4B0000000018 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_TESTING_SEARCH_PATHS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.playcover.PlayToolsTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		CE0A10012D1A4B0000000019 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				ENABLE_TESTING_SEARCH_PATHS = YES;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = io.playcover.PlayToolsTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_OPTIMIZATION_LEVEL = "-O";
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -1387,15 +1104,6 @@
 			buildConfigurations = (
 				AA7196E0287A447700623C15 /* Debug */,
 				AA7196E1287A447700623C15 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		CE0A10012D1A4B000000001A /* Build configuration list for PBXNativeTarget "PlayToolsTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				CE0A10012D1A4B0000000018 /* Debug */,
-				CE0A10012D1A4B0000000019 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

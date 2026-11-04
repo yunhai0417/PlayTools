@@ -12,7 +12,6 @@ public class PlayCover: NSObject {
     var menuController: MenuController?
 
     @objc static public func launch() {
-        PCLog.loader.info("PlayTools launching (safeMode: \(PlaySettings.shared.safeMode))")
         quitWhenClose()
         AKInterface.initialize()
         UserPluginLoader.initialize()
@@ -20,16 +19,12 @@ public class PlayCover: NSObject {
         PlayInput.shared.initialize()
         DiscordIPC.shared.initialize()
 
-        if !PlaySettings.shared.safeMode {
-            startHostChannel()
-        }
-
         if PlaySettings.shared.rootWorkDir {
             // Change the working directory to / just like iOS
             FileManager.default.changeCurrentDirectoryPath("/")
         }
 
-        if !PlaySettings.shared.safeMode && PlaySettings.shared.displayRotation != 0 {
+        if PlaySettings.shared.displayRotation != 0 {
             DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 0.5, execute: {
                 let rotateCommand = UIKeyCommand(
                     title: "Keep Rotation Command",
@@ -52,27 +47,6 @@ public class PlayCover: NSObject {
     @objc static public func initMenu(menu: NSObject) {
         guard let menuBuilder = menu as? UIMenuBuilder else { return }
         shared.menuController = MenuController(with: menuBuilder)
-    }
-
-    /// OPTIMIZATION.md phase 4: host command channel. `keymap.update`
-    /// rebuilds the dispatcher on the main queue exactly like the in-game
-    /// "switch keymap" menu entry; `diag.dump` re-exports the hook status
-    /// snapshot the host can then read.
-    private static func startHostChannel() {
-        let client = PCChannelClient.shared
-        client.setHandler(for: PCChannel.cmdKeymapUpdate) { _ in
-            PCLog.channel.info("host updated keymap; rebuilding actions")
-            DispatchQueue.main.async {
-                ActionDispatcher.build()
-            }
-        }
-        client.setHandler(for: PCChannel.cmdDiagDump) { _ in
-            PCLog.channel.info("host requested hook status dump")
-            DispatchQueue.main.async {
-                HookDiagnostics.exportSnapshot()
-            }
-        }
-        client.start()
     }
 
     static public func quitWhenClose() {

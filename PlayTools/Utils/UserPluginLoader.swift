@@ -12,10 +12,6 @@ enum UserPluginLoader {
     private static let userPluginsDirectoryName = "UserPlugins"
 
     static func initialize() {
-        if PlaySettings.shared.safeMode {
-            PCLog.plugin.info("safeMode ON: user plugins skipped")
-            return
-        }
         for dylibURL in userDylibURLs() {
             load(at: dylibURL)
         }
@@ -38,9 +34,9 @@ enum UserPluginLoader {
         // dlopen the plugin, let them rip.
         guard dlopen(url.path, RTLD_NOW) != nil else {
             let message = dlerror().flatMap { String(cString: $0) } ?? "unknown error"
-            PCLog.plugin.error("Failed to load user plugin \(url.lastPathComponent): \(message)")
+            print("[PlayTools] Failed to load user plugin \(url.lastPathComponent): \(message)")
             return
         }
-        PCLog.plugin.info("Loaded user plugin \(url.lastPathComponent)")
+        print("[PlayTools] Loaded user plugin \(url.lastPathComponent)")
     }
 }
