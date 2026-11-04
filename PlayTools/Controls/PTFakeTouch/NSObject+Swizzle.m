@@ -340,15 +340,21 @@ bool menuWasCreated = false;
             else {
                 // The window size written by PlayCover (windowWidth/windowHeight
                 // in the app settings plist) is authoritative: keep it, so the
-                // default-display hooks below size the scene from the plist
-                // instead of echoing back the (landscape) display bounds.
+                // hooks below size the scene from the plist instead of echoing
+                // back the (landscape) display bounds.
+                // The scene hooks intentionally match the adaptiveDisplay branch:
+                // the adaptive frame/bounds/size orientation convention is what
+                // Cambrium expects (host window = rotated scene * ~0.77), so a
+                // portrait plist yields a portrait window. The old *Default
+                // variants reported the opposite orientation, which turned
+                // portrait sizes into landscape windows.
                 if (![[PlaySettings shared] inverseScreenValues]) {
                     if(@available(iOS 17.1, *))
-                        [objc_getClass("FBSSceneSettingsCore") swizzleExchangeMethod:@selector(frame) withMethod:@selector(hook_frameDefault)];
+                        [objc_getClass("FBSSceneSettingsCore") swizzleExchangeMethod:@selector(frame) withMethod:@selector(hook_frame)];
                     else
-                        [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(frame) withMethod:@selector(hook_frameDefault)];
-                    [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(bounds) withMethod:@selector(hook_boundsDefault)];
-                    [objc_getClass("FBSDisplayMode") swizzleInstanceMethod:@selector(size) withMethod:@selector(hook_sizeDelfault)];
+                        [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(frame) withMethod:@selector(hook_frame)];
+                    [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(bounds) withMethod:@selector(hook_bounds)];
+                    [objc_getClass("FBSDisplayMode") swizzleInstanceMethod:@selector(size) withMethod:@selector(hook_size)];
                 }
                 [objc_getClass("UIDevice") swizzleInstanceMethod:@selector(orientation) withMethod:@selector(hook_orientation)];
                 [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeBounds) withMethod:@selector(hook_nativeBoundsDefault)];

@@ -9,6 +9,17 @@ import AppKit
 import CoreGraphics
 import Foundation
 
+// Add a lightweight struct so we can decode only the flag we care about
+private struct AKAppSettingsData: Codable {
+    var hideTitleBar: Bool?
+    var floatingWindow: Bool?
+    var resolution: Int?
+    var resizableAspectRatioWidth: Int?
+    var resizableAspectRatioHeight: Int?
+    var windowWidth: Int?
+    var windowHeight: Int?
+}
+
 class AKPlugin: NSObject, Plugin {
     required override init() {
         super.init()
@@ -32,6 +43,16 @@ class AKPlugin: NSObject, Plugin {
 
             if let aspectRatio = self.aspectRatioSetting {
                 window.contentAspectRatio = aspectRatio
+            }
+
+            if let size = self.defaultWindowSizeSetting {
+                // Default resolution mode: force the hosting window to the size
+                // PlayCover configured (device aspect, landscape or portrait).
+                // This overrides the frame AppKit restored from the previous
+                // session, which scene-level hooks cannot do (and old-lifecycle
+                // apps without scenes have no scene hooks at all).
+                window.setContentSize(size)
+                Self.clampWindowOntoScreen(window)
             }
 
             NSWindow.allowsAutomaticWindowTabbing = true
@@ -59,6 +80,16 @@ class AKPlugin: NSObject, Plugin {
 
                 if let aspectRatio = self.aspectRatioSetting {
                     win.contentAspectRatio = aspectRatio
+                }
+
+                // The main window may not be sized yet when the plugin loads;
+                // apply the configured default size on first key window only.
+                if !self.didApplyDefaultWindowSize, let size = self.defaultWindowSizeSetting {
+                    self.didApplyDefaultWindowSize = true
+                    if !win.styleMask.contains(.fullScreen) {
+                        win.setContentSize(size)
+                        Self.clampWindowOntoScreen(win)
+                    }
                 }
         }
     }
@@ -120,6 +151,7 @@ class AKPlugin: NSObject, Plugin {
     }
 
     private var modifierFlag: UInt = 0
+    private var didApplyDefaultWindowSize = false
 
     // swiftlint:disable:next function_body_length
     func setupKeyboard(keyboard: @escaping (UInt16, Bool, Bool, Bool) -> Bool,
@@ -293,13 +325,33 @@ class AKPlugin: NSObject, Plugin {
         return NSSize(width: width, height: height)
     }
 
-    fileprivate static var akAppSettingsData: AppSettingsData? = {
+    private var defaultWindowSizeSetting: NSSize? {
+        guard Self.akAppSettingsData?.resolution == 0 else {
+            return nil
+        }
+        let width = Self.akAppSettingsData?.windowWidth ?? 0
+        let height = Self.akAppSettingsData?.windowHeight ?? 0
+        guard width > 0 && height > 0 else {
+            return nil
+        }
+        return NSSize(width: width, height: height)
+    }
+
+    /// Keep an oversized configured window reachable after resizing.
+    private static func clampWindowOntoScreen(_ window: NSWindow) {
+        guard let screen = window.screen ?? NSScreen.main else { return }
+        if !screen.visibleFrame.insetBy(dx: 40, dy: 40).contains(window.frame) {
+            window.center()
+        }
+    }
+
+    fileprivate static var akAppSettingsData: AKAppSettingsData? = {
         let bundleIdentifier = Bundle.main.bundleIdentifier ?? ""
         let settingsURL = URL(fileURLWithPath: "/Users/\(NSUserName())/Library/Containers/io.playcover.PlayCover")
             .appendingPathComponent("App Settings")
             .appendingPathComponent("\(bundleIdentifier).plist")
         guard let data = try? Data(contentsOf: settingsURL),
-              let decoded = try? PropertyListDecoder().decode(AppSettingsData.self, from: data) else {
+              let decoded = try? PropertyListDecoder().decode(AKAppSettingsData.self, from: data) else {
             return nil
         }
         return decoded
