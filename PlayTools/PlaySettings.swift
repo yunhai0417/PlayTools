@@ -103,9 +103,44 @@ let settings = PlaySettings.shared
     // Phone preset (resolution == 7): window may be scaled up while the app
     // keeps observing the device's logical screen (bounds/nativeBounds).
     // Optional so plists written before this field existed still decode.
-    @objc lazy var phoneWindowScale: Double = settingsData.phoneWindowScale ?? 1.0
+    @objc lazy var phoneWindowScale: Double = {
+        if settingsData.resolution == 7 {
+            return settingsData.phoneWindowScale ?? 1.0
+        }
+        // Default resolution (mode 0) with an iPhone model: the plist window
+        // size is the device logical screen at scale 1.0 when freshly set by
+        // PlayCover, but stale plists may carry any size — derive the scale
+        // from the short sides so the app always observes the device screen.
+        if settingsData.resolution == 0,
+           let logical = PlaySettings.phoneDeviceLogicalSize(settingsData.iosDeviceModel) {
+            let windowShort = min(Double(settingsData.windowWidth), Double(settingsData.windowHeight))
+            let logicalShort = min(Double(logical.width), Double(logical.height))
+            if logicalShort > 0, windowShort > 0 {
+                return windowShort / logicalShort
+            }
+        }
+        return settingsData.phoneWindowScale ?? 1.0
+    }()
 
-    @objc lazy var phoneWindowed = settingsData.resolution == 7 && phoneWindowScale > 1.0
+    @objc lazy var phoneWindowed = (settingsData.resolution == 7 && phoneWindowScale > 1.0)
+        || (settingsData.resolution == 0
+            && PlaySettings.phoneDeviceLogicalSize(settingsData.iosDeviceModel) != nil)
+
+    /// Logical screen size (portrait orientation, in points) of the supported
+    /// iPhone models; nil for iPads and unknown identifiers. Apps running in
+    /// the phone preset observe exactly this screen regardless of window size.
+    static func phoneDeviceLogicalSize(_ model: String) -> CGSize? {
+        switch model {
+        case "iPhone14,3":
+            return CGSize(width: 428, height: 926)
+        case "iPhone15,3", "iPhone16,2":
+            return CGSize(width: 430, height: 932)
+        case "iPhone17,2":
+            return CGSize(width: 440, height: 956)
+        default:
+            return nil
+        }
+    }
 }
 
 struct AppSettingsData: Codable {

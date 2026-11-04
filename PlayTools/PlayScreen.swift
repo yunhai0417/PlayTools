@@ -96,6 +96,12 @@ public class PlayScreen: NSObject {
                 queue: .main) { notification in
                 if let window = notification.object as? UIWindow {
                     PlayScreen.applyPhoneWindowScale(window)
+                    // rootViewController may not be assigned yet when the
+                    // window first becomes key; retry once after launch.
+                    // Idempotent: every value comes from the settings plist.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        PlayScreen.applyPhoneWindowScale(window)
+                    }
                 }
             }
         }
@@ -159,32 +165,40 @@ public class PlayScreen: NSObject {
                       height: logical.height * CGFloat(customScaler))
     }
 
-    /// The scene is reported pre-compensated (phoneSceneSize), so Cambrium
-    /// itself derives the enlarged host window. The window itself must keep
-    /// an identity transform (Cambrium does not render transformed UIWindows),
-    /// so the zoom is applied to the ROOT VIEW instead: it is sized to the
-    /// device's logical screen (852 x 393) and scaled up by a plain CALayer
-    /// transform, which Cambrium renders fine. Apps therefore lay out in the
-    /// iPhone logical world while the content visually fills the window.
+    /// The window keeps an identity transform (Cambrium does not render
+    /// transformed UIWindows), so the zoom is applied to the ROOT VIEW
+    /// instead: it is sized to the device's logical screen (440 x 956) and
+    /// scaled by a plain CALayer transform, which Cambrium renders fine.
+    /// Apps therefore lay out in the iPhone logical world while the content
+    /// visually fills the (larger or smaller) window.
     @objc static func applyPhoneWindowScale(_ window: UIWindow) {
-        guard PlaySettings.shared.phoneWindowScale > 1.0 else { return }
         window.transform = .identity
-        guard let root = window.rootViewController?.view else { return }
         let logical = phoneLogicalSize
-        guard window.bounds.width > 0, window.bounds.height > 0, logical.width > 0 else { return }
-        // Only zoom windows whose aspect matches the preset's logical screen.
-        // Old-lifecycle apps never receive the compensated scene size (their
-        // window is self-determined with a different aspect), and zooming
-        // their root view would break their own layout. Catalyst may report
-        // the bounds portrait-swapped at didBecomeKey time, so compare
-        // rotation-normalized aspects and derive the ratio from short sides.
+        guard logical.width > 0, logical.height > 0 else { return }
+        // The fill ratio comes from the app settings plist — the same source
+        // AKInterface uses to size the host NSWindow — because this callback
+        // may run BEFORE that resize lands: at didBecomeKey time the window
+        // bounds can still equal the logical screen (ratio 1.0), and later
+        // deriving the ratio from the resized bounds would never re-run.
+        let ratio = CGFloat(PlaySettings.shared.phoneWindowScale)
+        // Zoom either way: windows enlarged past the logical screen zoom up;
+        // windows shrunk to the device's physical size on this Mac's display
+        // zoom down.
+        guard abs(ratio - 1.0) > 0.01 else { return }
+        guard let root = window.rootViewController?.view else { return }
+        // Skip auxiliary windows whose aspect differs from the phone screen;
+        // Catalyst may report bounds portrait-swapped at didBecomeKey time,
+        // so compare rotation-normalized aspects.
         let windowAspect = Swift.max(window.bounds.width, window.bounds.height)
             / min(window.bounds.width, window.bounds.height)
-        let logicalAspect = logical.width / logical.height
-        guard abs(windowAspect - logicalAspect) < 0.02 else { return }
-        let ratio = min(window.bounds.width, window.bounds.height) / min(logical.width, logical.height)
-        guard ratio > 1.01 else { return }
+        let logicalAspect = Swift.max(logical.width, logical.height)
+            / min(logical.width, logical.height)
+        guard window.bounds.width > 0, window.bounds.height > 0,
+              abs(windowAspect - logicalAspect) < 0.02 else { return }
         root.transform = .identity
+        // Freeze the root at the logical screen size so Catalyst window
+        // resizes don't fight the zoom transform.
+        root.autoresizingMask = []
         // Scale about the top-left corner so the zoomed view fills the window.
         root.layer.anchorPoint = CGPoint(x: 0, y: 0)
         root.frame = CGRect(origin: .zero, size: logical)
