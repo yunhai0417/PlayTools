@@ -43,15 +43,11 @@ public final class HookRegistry: NSObject {
         facts.disableBuiltinMouse = settings.disableBuiltinMouse
         facts.unityKeyboardInit = settings.ignoreUnityKeyboardInitializationError
 
-        // Original matrix side effect: persist default window size before the
-        // default-display hooks read it back (NSObject+Swizzle +load, else branch)
-        if facts.is163OrNewer && !facts.resizableWindow
-            && !facts.adaptiveDisplay && !facts.windowFixMethod1 {
-            let width = CGFloat(settingsDataWindowWidth())
-            settings.setValue(NSNumber(value: Float(width)), forKey: "windowSizeWidth")
-            let height = CGFloat(settingsDataWindowHeight())
-            settings.setValue(NSNumber(value: Float(height)), forKey: "windowSizeHeight")
-        }
+        // Note: the historical side effect here overwrote windowSizeWidth/Height
+        // with UIScreen.main.bounds for the default-display path, discarding the
+        // window size PlayCover wrote to the app settings plist. The plist values
+        // are authoritative now (NSObject+Swizzle +load keeps them too), so the
+        // default-display hooks size the scene from the configured window.
 
         // Three-tier resolution (OPTIMIZATION.md 5.1): external verified
         // pack -> bundled pack -> code matrix.
@@ -88,16 +84,6 @@ public final class HookRegistry: NSObject {
     private static func isSystemEncodingChinese() -> Bool {
         let encoding = CFStringGetSystemEncoding()
         return encoding == 0x0628 || encoding == 0x0629
-    }
-
-    /// Window size defaults mirroring the original `get_default_width/height`
-    /// helpers in NSObject+Swizzle.m (they read UIScreen through eventual hooks).
-    private func settingsDataWindowWidth() -> Double {
-        UIScreen.main.bounds.size.width
-    }
-
-    private func settingsDataWindowHeight() -> Double {
-        UIScreen.main.bounds.size.height
     }
 
     // MARK: - Installer

@@ -22,69 +22,69 @@ __attribute__((visibility("hidden")))
 
 @implementation NSObject (Swizzle)
 
-// Report an installation result to the hook diagnostics registry
-static void PTRecordHook(Class cls, SEL origSelector, SEL newSelector,
-                         NSString *result, NSString *detail) {
-    [[HookStatusRegistry shared] recordTarget:NSStringFromClass(cls)
-                                     selector:NSStringFromSelector(origSelector)
-                                  replacement:NSStringFromSelector(newSelector)
-                                       result:result
-                                       detail:detail];
-}
-
-// Self-contained installer used by HookRegistry.swift. Mirrors the semantics
-// of the former category helpers: `instance`/`classMethod` use the
-// add-then-replace dance (safe when the original lives on a superclass),
-// `exchange` swaps implementations in place (FBSSceneSettingsCore case).
-BOOL PTSwizzleOnClassNamed(NSString *className,
-                           PTSwizzleKind kind,
-                           SEL origSelector,
-                           SEL newSelector) {
-    Class cls = objc_getClass(className.UTF8String);
-    if (cls == Nil) {
-        [[HookStatusRegistry shared] recordTarget:className
-                                         selector:NSStringFromSelector(origSelector)
-                                      replacement:NSStringFromSelector(newSelector)
-                                           result:@"classNotFound"
-                                           detail:@"class does not exist"];
-        return NO;
-    }
-
-    // Class methods live on the metaclass; operate there directly so the
-    // add/replace dance targets the right owner.
-    Class owner = (kind == PTSwizzleKindClassMethod) ? object_getClass(cls) : cls;
-    Method originalMethod = class_getInstanceMethod(owner, origSelector);
-    Method swizzledMethod = class_getInstanceMethod(owner, newSelector);
-
-    if (originalMethod == NULL || swizzledMethod == NULL) {
-        PTRecordHook(cls, origSelector, newSelector,
-                     @"failed", originalMethod == NULL
-                         ? @"original method not found" : @"replacement method not found");
-        return NO;
-    }
-
-    if (kind == PTSwizzleKindExchange) {
-        method_exchangeImplementations(originalMethod, swizzledMethod);
-    } else if (class_addMethod(owner,
-                               origSelector,
-                               method_getImplementation(swizzledMethod),
-                               method_getTypeEncoding(swizzledMethod))) {
-        // Added if selector did not exist on this class (inherited from super)
-        class_replaceMethod(owner,
+- (void) swizzleInstanceMethod:(SEL)origSelector withMethod:(SEL)newSelector
+{
+    Class cls = [self class];
+    // If current class doesn't exist selector, then get super
+    Method originalMethod = class_getInstanceMethod(cls, origSelector);
+    Method swizzledMethod = class_getInstanceMethod(cls, newSelector);
+    
+    // Add selector if it doesn't exist, implement append with method
+    if (class_addMethod(cls,
+                        origSelector,
+                        method_getImplementation(swizzledMethod),
+                        method_getTypeEncoding(swizzledMethod)) ) {
+        // Replace class instance method, added if selector not exist
+        // For class cluster, it always adds new selector here
+        class_replaceMethod(cls,
                             newSelector,
                             method_getImplementation(originalMethod),
                             method_getTypeEncoding(originalMethod));
+        
     } else {
-        class_replaceMethod(owner,
+        // SwizzleMethod maybe belongs to super
+        class_replaceMethod(cls,
                             newSelector,
-                            class_replaceMethod(owner,
+                            class_replaceMethod(cls,
                                                 origSelector,
                                                 method_getImplementation(swizzledMethod),
                                                 method_getTypeEncoding(swizzledMethod)),
                             method_getTypeEncoding(originalMethod));
     }
-    PTRecordHook(cls, origSelector, newSelector, @"applied", nil);
-    return YES;
+}
+
+- (void) swizzleExchangeMethod:(SEL)origSelector withMethod:(SEL)newSelector
+{
+    Class cls = [self class];
+    // If current class doesn't exist selector, then get super
+    Method originalMethod = class_getInstanceMethod(cls, origSelector);
+    Method swizzledMethod = class_getInstanceMethod(cls, newSelector);
+    
+    method_exchangeImplementations(originalMethod, swizzledMethod);
+}
+
++ (void) swizzleClassMethod:(SEL)origSelector withMethod:(SEL)newSelector {
+    Class cls = object_getClass((id)self);
+    Method originalMethod = class_getClassMethod(cls, origSelector);
+    Method swizzledMethod = class_getClassMethod(cls, newSelector);
+
+    if (class_addMethod(cls,
+                        origSelector,
+                        method_getImplementation(swizzledMethod),
+                        method_getTypeEncoding(swizzledMethod))) {
+        class_replaceMethod(cls,
+                            newSelector,
+                            method_getImplementation(originalMethod),
+                            method_getTypeEncoding(originalMethod));
+    } else {
+        class_replaceMethod(cls,
+                            newSelector,
+                            class_replaceMethod(cls,
+                                                origSelector,
+                                                method_getImplementation(swizzledMethod),
+                                                method_getTypeEncoding(swizzledMethod)),
+                            method_getTypeEncoding(originalMethod));
+    }
 }
 
 - (BOOL) hook_prefersPointerLocked {
@@ -124,6 +124,33 @@ BOOL PTSwizzleOnClassNamed(NSString *className,
     return [PlayScreen sizeAspectRatio:[self hook_size]];
 }
 
+// Phone preset: the whole UIKit world (scene, display mode, UIScreen) reports
+// the device's logical screen; PlayScreen enlarges the hosting NSWindow so
+// the logical screen is zoomed on the Mac display.
+- (CGRect) hook_framePhone {
+    return [PlayScreen framePhone:[self hook_framePhone]];
+}
+
+- (CGRect) hook_boundsScenePhone {
+    return [PlayScreen framePhone:[self hook_boundsScenePhone]];
+}
+
+- (CGSize) hook_sizePhone {
+    return [PlayScreen sizePhone:[self hook_sizePhone]];
+}
+
+- (CGRect) hook_boundsPhone {
+    return [PlayScreen boundsPhone:[self hook_boundsPhone]];
+}
+
+- (CGRect) hook_nativeBoundsPhone {
+    return [PlayScreen nativeBoundsPhone:[self hook_nativeBoundsPhone]];
+}
+
+// Phone preset: the scene reports pre-compensated sizes (see PlayScreen
+// phoneSceneSize) so Cambrium itself derives the enlarged host window; no
+// host-window interception is needed.
+
 
 
 - (long long) hook_orientation {
@@ -148,9 +175,11 @@ BOOL PTSwizzleOnClassNamed(NSString *className,
     return NO;
 }
 
+#if !TARGET_OS_MACCATALYST
 - (void) hook_setCurrentSubscription:(VSSubscription *)currentSubscription {
     // do nothing
 }
+#endif
 
 - (NSString *)hook_stringByReplacingOccurrencesOfRegularExpressionPattern:(NSString *)pattern
                                                              withTemplate:(NSString *)template
@@ -197,8 +226,7 @@ BOOL PTSwizzleOnClassNamed(NSString *className,
         [self hook_Unity_KeyboardDelegate_Initialize];
     }
     @catch (NSException *exception) {
-        [[PCLog loader] error:[NSString stringWithFormat:@"Unity KeyboardDelegate Initialize threw %@: %@",
-                               exception.name, exception.reason]];
+        NSLog(@"Caught exception: %@, reason: %@", exception.name, exception.reason);
     }
 }
 
@@ -247,10 +275,139 @@ bool menuWasCreated = false;
 
 @implementation PTSwizzleLoader
 + (void)load {
-    // The entire install matrix now lives in HookRegistry.swift (declarative
-    // specs + introspection-first installer). Same hooks for the same settings
-    // matrix; safe mode and per-hook diagnostics handled by the registry.
-    [HookRegistry installFromLoad];
+    // This might need refactor soon
+    if(@available(iOS 16.3, *)) {
+        if ([[PlaySettings shared] phoneWindowed]) {
+            // Phone preset with window scaling: the scene and UIScreen are
+            // forced to the device's logical screen so the app sees exactly
+            // an iPhone; PlayScreen then enlarges the hosting NSWindow so
+            // the logical screen fills the (bigger) window on the Mac.
+            if(@available(iOS 17.1, *))
+                [objc_getClass("FBSSceneSettingsCore") swizzleExchangeMethod:@selector(frame) withMethod:@selector(hook_framePhone)];
+            else
+                [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(frame) withMethod:@selector(hook_framePhone)];
+            [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(bounds) withMethod:@selector(hook_boundsScenePhone)];
+            [objc_getClass("FBSDisplayMode") swizzleInstanceMethod:@selector(size) withMethod:@selector(hook_sizePhone)];
+
+            [objc_getClass("UIDevice") swizzleInstanceMethod:@selector(orientation) withMethod:@selector(hook_orientation)];
+            [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(bounds) withMethod:@selector(hook_boundsPhone)];
+            [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeBounds) withMethod:@selector(hook_nativeBoundsPhone)];
+            [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeScale) withMethod:@selector(hook_nativeScale)];
+            [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(scale) withMethod:@selector(hook_scale)];
+        }
+        else if ([[PlaySettings shared] resizableWindow]) {
+            [objc_getClass("_UIApplicationInfoParser") swizzleInstanceMethod:NSSelectorFromString(@"requiresFullScreen") withMethod:@selector(hook_requiresFullScreen)];
+            [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(bounds) withMethod:@selector(hook_boundsResizable)];
+            [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeScale) withMethod:@selector(hook_nativeScale)];
+            [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(scale) withMethod:@selector(hook_scale)];
+        }
+        else if ([[PlaySettings shared] adaptiveDisplay]) {
+            // This is an experimental fix
+            if ([[PlaySettings shared] inverseScreenValues]) {
+                // This lines set External Scene settings and other IOS10 Runtime services by swizzling
+                // In Sonoma 14.1 betas, frame method seems to be moved to FBSSceneSettingsCore
+                if(@available(iOS 17.1, *))
+                    [objc_getClass("FBSSceneSettingsCore") swizzleExchangeMethod:@selector(frame) withMethod:@selector(hook_frameDefault)];
+                else
+                    [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(frame) withMethod:@selector(hook_frameDefault)];
+                [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(bounds) withMethod:@selector(hook_boundsDefault)];
+                [objc_getClass("FBSDisplayMode") swizzleInstanceMethod:@selector(size) withMethod:@selector(hook_sizeDelfault)];
+                
+                // Fixes Apple mess at MacOS 13.2
+                [objc_getClass("UIDevice") swizzleInstanceMethod:@selector(orientation) withMethod:@selector(hook_orientation)];
+                [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeBounds) withMethod:@selector(hook_nativeBoundsDefault)];
+                [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeScale) withMethod:@selector(hook_nativeScale)];
+                [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(scale) withMethod:@selector(hook_scale)];
+            } else {
+                // This acutally runs when adaptiveDisplay is normally triggered
+                if(@available(iOS 17.1, *))
+                    [objc_getClass("FBSSceneSettingsCore") swizzleExchangeMethod:@selector(frame) withMethod:@selector(hook_frame)];
+                else
+                    [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(frame) withMethod:@selector(hook_frame)];
+                [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(bounds) withMethod:@selector(hook_bounds)];
+                [objc_getClass("FBSDisplayMode") swizzleInstanceMethod:@selector(size) withMethod:@selector(hook_size)];
+                
+                [objc_getClass("UIDevice") swizzleInstanceMethod:@selector(orientation) withMethod:@selector(hook_orientation)];
+                [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeBounds) withMethod:@selector(hook_nativeBounds)];
+                [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeScale) withMethod:@selector(hook_nativeScale)];
+                [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(scale) withMethod:@selector(hook_scale)];   
+            }
+        }
+        else {
+            if ([[PlaySettings shared] windowFixMethod] == 1) {
+                // do nothing:tm:
+            }
+            else {
+                // The window size written by PlayCover (windowWidth/windowHeight
+                // in the app settings plist) is authoritative: keep it, so the
+                // default-display hooks below size the scene from the plist
+                // instead of echoing back the (landscape) display bounds.
+                if (![[PlaySettings shared] inverseScreenValues]) {
+                    if(@available(iOS 17.1, *))
+                        [objc_getClass("FBSSceneSettingsCore") swizzleExchangeMethod:@selector(frame) withMethod:@selector(hook_frameDefault)];
+                    else
+                        [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(frame) withMethod:@selector(hook_frameDefault)];
+                    [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(bounds) withMethod:@selector(hook_boundsDefault)];
+                    [objc_getClass("FBSDisplayMode") swizzleInstanceMethod:@selector(size) withMethod:@selector(hook_sizeDelfault)];
+                }
+                [objc_getClass("UIDevice") swizzleInstanceMethod:@selector(orientation) withMethod:@selector(hook_orientation)];
+                [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeBounds) withMethod:@selector(hook_nativeBoundsDefault)];
+                
+                [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeScale) withMethod:@selector(hook_nativeScale)];
+                [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(scale) withMethod:@selector(hook_scale)];
+            }
+        }
+    } 
+    else {
+        if ([[PlaySettings shared] adaptiveDisplay]) {
+                if(@available(iOS 17.1, *))
+                    [objc_getClass("FBSSceneSettingsCore") swizzleExchangeMethod:@selector(frame) withMethod:@selector(hook_frame)];
+                else
+                    [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(frame) withMethod:@selector(hook_frame)];
+                [objc_getClass("FBSSceneSettings") swizzleInstanceMethod:@selector(bounds) withMethod:@selector(hook_bounds)];
+                [objc_getClass("FBSDisplayMode") swizzleInstanceMethod:@selector(size) withMethod:@selector(hook_size)];
+            }
+    }
+    
+    [objc_getClass("_UIMenuBuilder") swizzleInstanceMethod:sel_getUid("initWithRootMenu:") withMethod:@selector(initWithRootMenuHook:)];
+    [objc_getClass("IOSViewController") swizzleInstanceMethod:@selector(prefersPointerLocked) withMethod:@selector(hook_prefersPointerLocked)];
+    // Set idiom to iPad
+    // [objc_getClass("UIDevice") swizzleInstanceMethod:@selector(userInterfaceIdiom) withMethod:@selector(hook_userInterfaceIdiom)];
+    // [objc_getClass("UITraitCollection") swizzleInstanceMethod:@selector(userInterfaceIdiom) withMethod:@selector(hook_userInterfaceIdiom)];
+
+#if !TARGET_OS_MACCATALYST
+    [objc_getClass("VSSubscriptionRegistrationCenter") swizzleInstanceMethod:@selector(setCurrentSubscription:) withMethod:@selector(hook_setCurrentSubscription:)];
+#endif
+
+    if (PlayInfo.isUnrealEngine) {
+        // Fix NSRegularExpression crash when system language is set to Chinese
+        CFStringEncoding encoding = CFStringGetSystemEncoding();
+        if (encoding == kCFStringEncodingMacChineseSimp || encoding == kCFStringEncodingMacChineseTrad) {
+            SEL origSelector = NSSelectorFromString(@"_stringByReplacingOccurrencesOfRegularExpressionPattern:withTemplate:options:range:");
+            SEL newSelector = @selector(hook_stringByReplacingOccurrencesOfRegularExpressionPattern:withTemplate:options:range:);
+            [objc_getClass("NSString") swizzleInstanceMethod:origSelector withMethod:newSelector];
+        }
+    }
+
+    if ([[PlaySettings shared] checkMicPermissionSync]) {
+        [objc_getClass("AVAudioSession") swizzleInstanceMethod:@selector(requestRecordPermission:) withMethod:@selector(hook_requestRecordPermission:)];
+    }
+
+    if ([[PlaySettings shared] limitMotionUpdateFrequency]) {
+        [objc_getClass("CMMotionManager") swizzleInstanceMethod:@selector(init) withMethod:@selector(hook_CMMotionManager_init)];
+    }
+
+    if (([[PlaySettings shared] disableBuiltinMouse])) {
+        [objc_getClass("GCMouse") swizzleClassMethod:@selector(current) withMethod:@selector(hook_GCMouse_current)];
+        [objc_getClass("GCMouse") swizzleClassMethod:@selector(mice) withMethod:@selector(hook_GCMouse_mice)];
+    }
+
+    // Delay a frame to wait for some frameworks (such as UnityFramework) to load
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.01 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        if ([[PlaySettings shared] ignoreUnityKeyboardInitializationError]) {
+            [objc_getClass("KeyboardDelegate") swizzleClassMethod:NSSelectorFromString(@"Initialize") withMethod:@selector(hook_Unity_KeyboardDelegate_Initialize)];
+        }
+    });
 }
 
 @end
