@@ -102,6 +102,11 @@ public class PlayScreen: NSObject {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         PlayScreen.applyPhoneWindowScale(window)
                     }
+                    // Apps that add subviews directly (no rootViewController)
+                    // may do so late (H5 webviews); one more idempotent retry.
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+                        PlayScreen.applyPhoneWindowScale(window)
+                    }
                 }
             }
         }
@@ -165,6 +170,89 @@ public class PlayScreen: NSObject {
                       height: logical.height * CGFloat(customScaler))
     }
 
+    /// True when the size matches the pre-compensated phone scene size
+    /// (compared rotation-normalized, ±2pt) — the signature of the
+    /// scene-synced main window.
+    static func isPhoneSceneSized(_ size: CGSize) -> Bool {
+        guard size.width > 0, size.height > 0 else { return false }
+        let scene = phoneSceneSize
+        return abs(Swift.max(size.width, size.height) - Swift.max(scene.width, scene.height)) < 2
+            && abs(min(size.width, size.height) - min(scene.width, scene.height)) < 2
+    }
+
+    /// Old-lifecycle apps (no scene session): Catalyst syncs their UIWindow
+    /// to the pre-compensated scene size and composites it at a fixed
+    /// ×0.77009 into the host, so the canvas must STAY at that size to fill
+    /// the window. This rewrite only affects what the app READS: window
+    /// bounds/frame report the device logical screen instead, so the app
+    /// lays out in the device's logical world (see legacyPhoneContainer).
+    /// Sizes that don't match the scene-synced main window pass through.
+    @objc public static func clampPhoneFrame(_ rect: CGRect) -> CGRect {
+        guard isPhoneSceneSized(rect.size) else { return rect }
+        let logical = phoneLogicalSize
+        let logicalMax = Swift.max(logical.width, logical.height)
+        let logicalMin = min(logical.width, logical.height)
+        let size = rect.width >= rect.height
+            ? CGSize(width: logicalMax, height: logicalMin)
+            : CGSize(width: logicalMin, height: logicalMax)
+        return CGRect(x: rect.minX, y: rect.minY, width: size.width, height: size.height)
+    }
+
+    // Old-lifecycle phone apps: the window canvas stays at the
+    // pre-compensated scene size (475 x 1032) so Catalyst's fixed 0.77
+    // mapping fills the host window, but everything the app adds lives in
+    // the device logical world (440 x 956) inside this zoomed container:
+    // its transform (scene / logical ≈ 1.08) is invisible to the app, so
+    // no amount of app-side relayout can break the scaling.
+    private static var legacyPhoneContainerKey: UInt8 = 0
+    private static var legacyPhoneInstalling = false
+
+    @objc static var legacyPhoneBypass: Bool { legacyPhoneInstalling }
+
+    @objc static func isLegacyPhoneMainWindow(_ window: UIWindow) -> Bool {
+        guard phoneWindowedMainCheck() else { return false }
+        // layer.bounds holds the REAL stored size; the UIView bounds/frame
+        // getters are hooked to report the logical size for this window.
+        return isPhoneSceneSized(window.layer.bounds.size)
+    }
+
+    private static func phoneWindowedMainCheck() -> Bool {
+        PlaySettings.shared.phoneWindowed && PlaySettings.shared.legacyLifecycle
+    }
+
+    @objc static func addLegacyPhoneSubview(_ window: UIWindow, subview: UIView) {
+        ensureLegacyPhoneContainer(window).addSubview(subview)
+    }
+
+    @discardableResult
+    @objc static func ensureLegacyPhoneContainer(_ window: UIWindow) -> UIView {
+        if let existing = objc_getAssociatedObject(window, &legacyPhoneContainerKey) as? UIView {
+            return existing
+        }
+        let logical = phoneLogicalSize
+        let scene = phoneSceneSize
+        let container = UIView(frame: CGRect(origin: .zero, size: logical))
+        container.autoresizingMask = []
+        // Anchor at the top-left corner; reset position afterwards, since
+        // moving the anchor alone keeps the old center-based position and
+        // shifts the view right/down by half its size.
+        container.layer.anchorPoint = CGPoint(x: 0, y: 0)
+        container.layer.position = CGPoint.zero
+        container.transform = CGAffineTransform(scaleX: scene.width / logical.width,
+                                                y: scene.height / logical.height)
+        // Move any subviews the app added before the container existed.
+        let existing = window.subviews
+        legacyPhoneInstalling = true
+        for subview in existing {
+            container.addSubview(subview)
+        }
+        window.addSubview(container)
+        legacyPhoneInstalling = false
+        objc_setAssociatedObject(window, &legacyPhoneContainerKey,
+                                 container, .OBJC_ASSOCIATION_RETAIN_NONATOMIC)
+        return container
+    }
+
     /// The window keeps an identity transform (Cambrium does not render
     /// transformed UIWindows), so the zoom is applied to the ROOT VIEW
     /// instead: it is sized to the device's logical screen (440 x 956) and
@@ -172,6 +260,16 @@ public class PlayScreen: NSObject {
     /// Apps therefore lay out in the iPhone logical world while the content
     /// visually fills the (larger or smaller) window.
     @objc static func applyPhoneWindowScale(_ window: UIWindow) {
+        if PlaySettings.shared.legacyLifecycle {
+            // Old-lifecycle apps: the window canvas must stay at the
+            // pre-compensated scene size (Catalyst composites it at a
+            // fixed 0.77), so instead of zooming views the app gets a
+            // device-logical container (see legacyPhoneContainer) that
+            // survives its own relayouts. Aux windows are left alone.
+            guard isPhoneSceneSized(window.layer.bounds.size) else { return }
+            ensureLegacyPhoneContainer(window)
+            return
+        }
         window.transform = .identity
         let logical = phoneLogicalSize
         guard logical.width > 0, logical.height > 0 else { return }

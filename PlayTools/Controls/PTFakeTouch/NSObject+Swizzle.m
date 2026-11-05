@@ -147,6 +147,57 @@ __attribute__((visibility("hidden")))
     return [PlayScreen nativeBoundsPhone:[self hook_nativeBoundsPhone]];
 }
 
+// Phone preset + old lifecycle (no scene session): Catalyst syncs the app's
+// UIWindow to the pre-compensated scene size and composites it at a fixed
+// 0.77 into the host. The canvas must keep that size, but everything the
+// app READS reports the device logical screen (bounds/frame getters) and
+// everything the app ADDS is routed into a zoomed logical-size container,
+// so the app lives in the device's logical world while its content fills
+// the window. Auxiliary windows pass through untouched.
+- (CGRect) hook_boundsPhoneWindow {
+    return [PlayScreen clampPhoneFrame:[self hook_boundsPhoneWindow]];
+}
+
+- (CGRect) hook_framePhoneWindow {
+    return [PlayScreen clampPhoneFrame:[self hook_framePhoneWindow]];
+}
+
+- (void) hook_addSubviewPhone:(UIView *)view {
+    if ([PlayScreen isLegacyPhoneMainWindow:(UIWindow *)self]
+        && ![PlayScreen legacyPhoneBypass]) {
+        [PlayScreen addLegacyPhoneSubview:(UIWindow *)self subview:view];
+    } else {
+        [self hook_addSubviewPhone:view];
+    }
+}
+
+- (void) hook_insertSubviewPhone:(UIView *)view atIndex:(NSInteger)index {
+    if ([PlayScreen isLegacyPhoneMainWindow:(UIWindow *)self]
+        && ![PlayScreen legacyPhoneBypass]) {
+        [PlayScreen addLegacyPhoneSubview:(UIWindow *)self subview:view];
+    } else {
+        [self hook_insertSubviewPhone:view atIndex:index];
+    }
+}
+
+- (void) hook_insertSubviewPhone:(UIView *)view aboveSubview:(UIView *)sibling {
+    if ([PlayScreen isLegacyPhoneMainWindow:(UIWindow *)self]
+        && ![PlayScreen legacyPhoneBypass]) {
+        [PlayScreen addLegacyPhoneSubview:(UIWindow *)self subview:view];
+    } else {
+        [self hook_insertSubviewPhone:view aboveSubview:sibling];
+    }
+}
+
+- (void) hook_insertSubviewPhone:(UIView *)view belowSubview:(UIView *)sibling {
+    if ([PlayScreen isLegacyPhoneMainWindow:(UIWindow *)self]
+        && ![PlayScreen legacyPhoneBypass]) {
+        [PlayScreen addLegacyPhoneSubview:(UIWindow *)self subview:view];
+    } else {
+        [self hook_insertSubviewPhone:view belowSubview:sibling];
+    }
+}
+
 // Phone preset: the scene reports pre-compensated sizes (see PlayScreen
 // phoneSceneSize) so Cambrium itself derives the enlarged host window; no
 // host-window interception is needed.
@@ -294,6 +345,20 @@ bool menuWasCreated = false;
             [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeBounds) withMethod:@selector(hook_nativeBoundsPhone)];
             [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(nativeScale) withMethod:@selector(hook_nativeScale)];
             [objc_getClass("UIScreen") swizzleInstanceMethod:@selector(scale) withMethod:@selector(hook_scale)];
+            if ([[PlaySettings shared] legacyLifecycle]) {
+                [objc_getClass("UIWindow") swizzleInstanceMethod:@selector(bounds)
+                                                     withMethod:@selector(hook_boundsPhoneWindow)];
+                [objc_getClass("UIWindow") swizzleInstanceMethod:@selector(frame)
+                                                     withMethod:@selector(hook_framePhoneWindow)];
+                [objc_getClass("UIWindow") swizzleInstanceMethod:@selector(addSubview:)
+                                                     withMethod:@selector(hook_addSubviewPhone:)];
+                [objc_getClass("UIWindow") swizzleInstanceMethod:@selector(insertSubview:atIndex:)
+                                                     withMethod:@selector(hook_insertSubviewPhone:atIndex:)];
+                [objc_getClass("UIWindow") swizzleInstanceMethod:@selector(insertSubview:aboveSubview:)
+                                                     withMethod:@selector(hook_insertSubviewPhone:aboveSubview:)];
+                [objc_getClass("UIWindow") swizzleInstanceMethod:@selector(insertSubview:belowSubview:)
+                                                     withMethod:@selector(hook_insertSubviewPhone:belowSubview:)];
+            }
         }
         else if ([[PlaySettings shared] resizableWindow]) {
             [objc_getClass("_UIApplicationInfoParser") swizzleInstanceMethod:NSSelectorFromString(@"requiresFullScreen") withMethod:@selector(hook_requiresFullScreen)];

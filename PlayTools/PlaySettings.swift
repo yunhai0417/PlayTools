@@ -126,6 +126,12 @@ let settings = PlaySettings.shared
         || (settingsData.resolution == 0
             && PlaySettings.phoneDeviceLogicalSize(settingsData.iosDeviceModel) != nil)
 
+    // Apps without a UIApplicationSceneManifest (old lifecycle) have no real
+    // scene session: Catalyst syncs their UIWindow directly to the (hooked)
+    // FBSSceneSettings size. For those, the window is clamped to the device
+    // logical screen instead of zooming views (see PlayScreen).
+    @objc lazy var legacyLifecycle = Bundle.main.infoDictionary?["UIApplicationSceneManifest"] == nil
+
     /// Logical screen size (portrait orientation, in points) of the supported
     /// iPhone models; nil for iPads and unknown identifiers. Apps running in
     /// the phone preset observe exactly this screen regardless of window size.
